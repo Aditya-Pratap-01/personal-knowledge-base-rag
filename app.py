@@ -21,7 +21,7 @@ st.caption("Ask questions only about your uploaded notes. Answers include the ex
 
 # ---------------- Sidebar ----------------
 with st.sidebar:
-    st.header("1. Add notes")
+    st.header("Add Files")
     uploaded_files = st.file_uploader(
         "Upload .txt, .md or .pdf files",
         type=["txt", "md", "pdf"],
@@ -44,8 +44,7 @@ if st.button("🗑️ Clear Knowledge Base"):
     st.rerun()
 
 st.info(
-    "The app retrieves relevant chunks first. "
-    "The LLM is instructed to answer only from those chunks."
+    "Hello, How can I help you? You can ask questions about your uploaded notes. "
 )
 
 # ---------------- API key check ----------------
