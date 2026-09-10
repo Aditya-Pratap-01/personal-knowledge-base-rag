@@ -719,7 +719,7 @@ if prompt:
     if is_thanks(question):
 
         answer = (
-            "You're welcome bhai! 😊"
+            "You're welcome, Always here to help!"
         )
 
         current_chat["messages"].append(
