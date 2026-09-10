@@ -71,6 +71,7 @@ for message in st.session_state.messages:
 
 if question:
     st.session_state.messages.append({"role": "user", "content": question})
+
     with st.chat_message("user"):
         st.markdown(question)
 
@@ -80,11 +81,17 @@ if question:
 
         if not results:
             answer = "I couldn't find relevant information in your uploaded notes, so I won't guess."
+
             st.markdown(answer)
-            st.session_state.messages.append({"role": "assistant", "content": answer})
+
+            st.session_state.messages.append(
+                {"role": "assistant", "content": answer}
+            )
+
             st.stop()
 
         context_parts = []
+
         for i, item in enumerate(results, start=1):
             context_parts.append(
                 f"[SOURCE {i}]\n"
@@ -99,11 +106,12 @@ if question:
 
 RULES:
 1. Answer ONLY using the supplied SOURCE text.
-2. Do not use outside knowledge.
-3. If the sources do not contain enough information, say:
-   "I couldn't find enough information in your notes to answer that."
-4. Every factual claim must have a citation like [SOURCE 1].
-5. Keep the answer clear and concise.
+2. Do not use outside knowledge or assumptions.
+3. If the sources do not contain enough information to answer the question, respond EXACTLY with:
+"I couldn't find enough information in your notes to answer that."
+4. When you use information from a source, cite the relevant source like [SOURCE 1].
+5. If you cannot answer from the sources, do NOT include any [SOURCE] citation.
+6. Keep the answer clear and concise.
 """
 
         user_prompt = f"""User question:
@@ -117,20 +125,37 @@ Retrieved sources:
             response = client.chat.completions.create(
                 model="openai/gpt-oss-120b",
                 messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
+                    {
+                        "role": "system",
+                        "content": system_prompt,
+                    },
+                    {
+                        "role": "user",
+                        "content": user_prompt,
+                    },
                 ],
                 temperature=0,
             )
+
             answer = response.choices[0].message.content
+
         except Exception as e:
             answer = f"Groq API error: {e}"
 
         st.markdown(answer)
 
-        st.subheader("Exact chunks used")
-        for i, item in enumerate(results, start=1):
-            with st.expander(f"[SOURCE {i}] — {item['source']} — chunk {item['chunk_id']}"):
-                st.code(item["text"])
+        # Show exact chunks ONLY if the question was answered.
+        refusal_text = "I couldn't find enough information in your notes to answer that."
 
-        st.session_state.messages.append({"role": "assistant", "content": answer})
+        if refusal_text not in answer:
+            st.subheader("Exact chunks used")
+
+            for i, item in enumerate(results, start=1):
+                with st.expander(
+                    f"[SOURCE {i}] — {item['source']} — chunk {item['chunk_id']}"
+                ):
+                    st.code(item["text"])
+
+        st.session_state.messages.append(
+            {"role": "assistant", "content": answer}
+        )
