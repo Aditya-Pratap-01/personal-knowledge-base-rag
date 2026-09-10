@@ -1,8 +1,8 @@
-import os
-
 import streamlit as st
-from dotenv import load_dotenv
 from groq import Groq
+from dotenv import load_dotenv
+import os
+import uuid
 
 from rag import (
     ingest_documents,
@@ -11,107 +11,78 @@ from rag import (
     clear_collection,
 )
 
-load_dotenv()
+
+# =========================================================
+# PAGE CONFIG
+# =========================================================
 
 st.set_page_config(
     page_title="Personal Knowledge Base",
-    page_icon="📚",
+    page_icon="🧠",
     layout="wide",
 )
 
-st.title("📚 Personal Knowledge Base Assistant")
-st.caption(
-    "Ask questions only about your uploaded notes. "
-    "Answers include the exact source chunks."
-)
 
+# =========================================================
+# LOAD ENVIRONMENT VARIABLES
+# =========================================================
 
-# ---------------------------------------------------------
-# Sidebar
-# ---------------------------------------------------------
+load_dotenv()
 
-with st.sidebar:
-    st.header("1. Add notes")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-    uploaded_files = st.file_uploader(
-        "Upload .txt, .md or .pdf files",
-        type=["txt", "md", "pdf"],
-        accept_multiple_files=True,
+if not GROQ_API_KEY:
+    st.error(
+        "GROQ_API_KEY nahi mila. Please .env file me API key add karo."
     )
-
-    if uploaded_files and st.button(
-        "Index uploaded notes",
-        type="primary",
-    ):
-        with st.spinner(
-            "Reading, chunking and embedding your notes..."
-        ):
-            result = ingest_documents(uploaded_files)
-
-        st.success(
-            f"Indexed {result['files']} file(s), "
-            f"{result['chunks']} chunk(s)."
-        )
-
-    st.divider()
-
-    st.metric(
-        "Stored chunks",
-        get_collection_count(),
-    )
-
-
-# ---------------------------------------------------------
-# Clear Knowledge Base
-# ---------------------------------------------------------
-
-if st.button("🗑️ Clear Knowledge Base"):
-    clear_collection()
-
-    st.success("Knowledge base cleared.")
-
-    st.rerun()
-
-
-st.info(
-    "The app retrieves relevant chunks first and uses "
-    "conversation history to understand follow-up questions. "
-    "The LLM is instructed to answer only from your notes."
-)
-
-
-# ---------------------------------------------------------
-# Groq API
-# ---------------------------------------------------------
-
-api_key = os.getenv("GROQ_API_KEY")
-
-if not api_key:
-    st.warning(
-        "GROQ_API_KEY is not set. Create a .env file in this "
-        "project and add:\n\n"
-        "GROQ_API_KEY=your_key_here"
-    )
-
     st.stop()
 
-client = Groq(api_key=api_key)
+
+client = Groq(
+    api_key=GROQ_API_KEY
+)
 
 
-# ---------------------------------------------------------
-# Conversation Memory
-# ---------------------------------------------------------
+# =========================================================
+# CONSTANTS
+# =========================================================
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+REFUSAL_PHRASE = (
+    "I couldn't find relevant information in your "
+    "uploaded notes, so I won't guess."
+)
 
 
-# ---------------------------------------------------------
-# Intent Detection
-# ---------------------------------------------------------
+# =========================================================
+# CHAT FUNCTIONS
+# =========================================================
+
+def create_chat():
+    """Create a new empty chat."""
+
+    chat_id = str(uuid.uuid4())
+
+    st.session_state.chats[chat_id] = {
+        "title": "New Chat",
+        "messages": [],
+    }
+
+    st.session_state.current_chat_id = chat_id
+
+
+def get_current_chat():
+    """Get the currently selected chat."""
+
+    return st.session_state.chats[
+        st.session_state.current_chat_id
+    ]
+
+
+# =========================================================
+# GREETING DETECTION
+# =========================================================
 
 def is_greeting(text):
-    text = text.lower().strip()
 
     greetings = [
         "hi",
@@ -119,384 +90,1098 @@ def is_greeting(text):
         "hey",
         "hii",
         "hiii",
-        "helo",
         "namaste",
         "good morning",
         "good afternoon",
         "good evening",
     ]
 
-    return text in greetings
+    normalized = text.lower().strip()
 
+    return normalized in greetings
+
+
+# =========================================================
+# THANKS DETECTION
+# =========================================================
 
 def is_thanks(text):
-    text = text.lower().strip()
 
     thanks_words = [
         "thanks",
         "thank you",
+        "thankyou",
         "thx",
         "ty",
         "thanks bhai",
         "thank you bhai",
     ]
 
-    return text in thanks_words
+    normalized = text.lower().strip()
 
+    return normalized in thanks_words
+
+
+# =========================================================
+# MEMORY QUESTION DETECTION
+# =========================================================
 
 def is_memory_question(text):
-    text = text.lower().strip()
 
-    memory_questions = [
-        "what was my last question",
-        "what was my previous question",
-        "what did i ask last",
+    normalized = text.lower().strip()
+
+    memory_keywords = [
+        # English
+        "last question",
+        "previous question",
+        "my last question",
+        "my previous question",
         "what did i ask before",
-        "what did i just ask",
-        "what was the question i asked",
-        "what was my last query",
-        "what did i ask previously",
-        "what was my previous query",
+        "what did i ask earlier",
+        "what did i say before",
+        "what did i say earlier",
+        "what was i asking",
+        "what were we talking about",
+        "what are we talking about",
+        "what did we discuss",
+
+        # Hinglish
+        "pichla question",
+        "pichla sawaal",
+        "last sawaal",
+        "previous sawaal",
+        "mera pichla question",
+        "mera pichla sawaal",
+        "mera last question",
+        "mera last sawaal",
+        "mera previous question",
+        "maine pehle kya poocha",
+        "maine pehle kya pucha",
+        "maine pehle kya poocha tha",
+        "maine pehle kya pucha tha",
+        "maine pichle baar kya poocha",
+        "maine pichle baar kya pucha",
+        "maine pichle baar kya poocha tha",
+        "maine pichle baar kya pucha tha",
+        "maine kya poocha",
+        "maine kya pucha",
+        "maine kya poocha tha",
+        "maine kya pucha tha",
+        "maine abhi kya poocha",
+        "maine abhi kya pucha",
+        "maine abhi kya poocha tha",
+        "maine abhi kya pucha tha",
+        "hum kya baat kar rahe",
+        "hum kis bare mein baat kar rahe",
+        "hum kis bare me baat kar rahe",
+        "kya discuss kar rahe",
+        "abhi hum kya discuss kar rahe",
     ]
 
     return any(
-        phrase in text
-        for phrase in memory_questions
+        keyword in normalized
+        for keyword in memory_keywords
     )
 
 
-# ---------------------------------------------------------
-# Display Conversation History
-# ---------------------------------------------------------
+# =========================================================
+# RECENT CONVERSATION
+# =========================================================
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+def get_recent_conversation(messages, limit=6):
+
+    recent = messages[-limit:]
+
+    conversation = []
+
+    for message in recent:
+
+        role = message.get("role", "")
+        content = message.get("content", "")
+
+        if role == "user":
+
+            conversation.append(
+                f"User: {content}"
+            )
+
+        elif role == "assistant":
+
+            conversation.append(
+                f"Assistant: {content}"
+            )
+
+    return "\n".join(conversation)
 
 
-# ---------------------------------------------------------
-# User Question
-# ---------------------------------------------------------
+# =========================================================
+# MEMORY ANSWER
+# =========================================================
 
-question = st.chat_input(
-    "Ask something about your notes..."
-)
+def answer_memory_question(messages):
 
+    user_messages = [
+        message["content"]
+        for message in messages
+        if message["role"] == "user"
+    ]
 
-if question:
+    if len(user_messages) <= 1:
 
-    # -----------------------------------------------------
-    # Save current user message
-    # -----------------------------------------------------
+        return (
+            "Abhi is chat me tumne koi previous question "
+            "nahi poocha hai bhai."
+        )
 
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": question,
-        }
+    previous_question = user_messages[-2]
+
+    return (
+        f"Tumhara previous question tha:\n\n"
+        f"> {previous_question}"
     )
 
-    with st.chat_message("user"):
-        st.markdown(question)
 
+# =========================================================
+# QUERY CORRECTION
+# =========================================================
 
-    # -----------------------------------------------------
-    # Greeting
-    # -----------------------------------------------------
+def correct_query(question, recent_conversation=""):
+    """
+    Correct only obvious spelling and typing mistakes.
 
-    if is_greeting(question):
+    This function does NOT answer the question.
+    """
 
-        answer = (
-            "Hello! 👋 How can I help you? "
-            "You can ask questions about your uploaded notes."
-        )
+    correction_prompt = f"""
+You are a search-query correction assistant.
 
-        with st.chat_message("assistant"):
-            st.markdown(answer)
+Your ONLY job is to correct obvious small spelling,
+typing, and transliteration mistakes in the user's query.
 
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": answer,
-            }
-        )
+Examples:
 
-        st.stop()
+"dal makhni kaise bnate hai?"
+-> "dal makhani kaise banate hai?"
 
+"compny me kitne employes hai?"
+-> "company me kitne employees hai?"
 
-    # -----------------------------------------------------
-    # Thanks
-    # -----------------------------------------------------
+"rag systm me grounding kya hai?"
+-> "RAG system me grounding kya hai?"
 
-    if is_thanks(question):
+Rules:
 
-        answer = "You're welcome bhai! 😊"
+1. Preserve the user's original meaning.
+2. Do not add new information.
+3. Do not answer the question.
+4. Do not translate the question.
+5. Preserve Hinglish / Roman Hindi if the user used Hinglish.
+6. Only fix obvious mistakes.
+7. If the query is already fine, return it unchanged.
+8. Return ONLY the corrected query.
+9. No quotes.
+10. No explanation.
 
-        with st.chat_message("assistant"):
-            st.markdown(answer)
+Recent conversation:
 
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": answer,
-            }
-        )
+{recent_conversation}
 
-        st.stop()
-
-
-    # -----------------------------------------------------
-    # Conversation Memory Question
-    # -----------------------------------------------------
-
-    if is_memory_question(question):
-
-        # Exclude the current question.
-        previous_user_questions = [
-            message["content"]
-            for message in st.session_state.messages[:-1]
-            if message["role"] == "user"
-        ]
-
-        if previous_user_questions:
-
-            last_question = previous_user_questions[-1]
-
-            answer = (
-                f'Your last question was: "{last_question}"'
-            )
-
-        else:
-
-            answer = (
-                "You haven't asked me a previous question "
-                "in this conversation yet."
-            )
-
-        with st.chat_message("assistant"):
-            st.markdown(answer)
-
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": answer,
-            }
-        )
-
-        st.stop()
-
-
-    # -----------------------------------------------------
-    # Assistant / RAG
-    # -----------------------------------------------------
-
-    with st.chat_message("assistant"):
-
-        # -------------------------------------------------
-        # Build conversation context
-        # -------------------------------------------------
-
-        recent_messages = st.session_state.messages[-7:]
-
-        conversation_history = []
-
-        for message in recent_messages:
-
-            role = message["role"].upper()
-
-            conversation_history.append(
-                f"{role}: {message['content']}"
-            )
-
-        conversation_history = "\n".join(
-            conversation_history
-        )
-
-
-        # -------------------------------------------------
-        # Retrieval
-        # -------------------------------------------------
-
-        retrieval_query = f"""
-Previous conversation:
-
-{conversation_history}
-
-Current question:
+User query:
 
 {question}
 """
 
-        with st.spinner("Searching your notes..."):
+    try:
 
-            results = search_documents(
-                retrieval_query,
-                top_k=5,
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Correct only obvious spelling and "
+                        "typing mistakes. Never answer the question."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": correction_prompt,
+                },
+            ],
+
+            temperature=0,
+            max_tokens=100,
+        )
+
+        corrected = (
+            response
+            .choices[0]
+            .message
+            .content
+            .strip()
+        )
+
+        if not corrected:
+            return question
+
+        # Safety check.
+        if len(corrected) > max(
+            len(question) * 2,
+            100,
+        ):
+            return question
+
+        return corrected
+
+    except Exception:
+
+        # If correction fails, use original query.
+        return question
+
+
+# =========================================================
+# SESSION STATE
+# =========================================================
+
+if "chats" not in st.session_state:
+
+    st.session_state.chats = {}
+
+
+if "current_chat_id" not in st.session_state:
+
+    create_chat()
+
+
+# =========================================================
+# SIDEBAR
+# =========================================================
+
+with st.sidebar:
+
+    # -----------------------------------------------------
+    # STORED CHUNKS
+    # -----------------------------------------------------
+
+    try:
+
+        count = get_collection_count()
+
+        st.metric(
+            "Stored Chunks",
+            count,
+        )
+
+    except Exception:
+
+        st.metric(
+            "Stored Chunks",
+            0,
+        )
+
+
+    # -----------------------------------------------------
+    # CLEAR KNOWLEDGE BASE
+    # -----------------------------------------------------
+
+    if st.button(
+        "🗑️ Clear Knowledge Base",
+        use_container_width=True,
+    ):
+
+        try:
+
+            clear_collection()
+
+            st.success(
+                "Knowledge Base clear ho gaya."
+            )
+
+            st.rerun()
+
+        except Exception as e:
+
+            st.error(
+                f"Knowledge Base clear nahi ho paya:\n{e}"
             )
 
 
+    # -----------------------------------------------------
+    # HISTORY
+    # -----------------------------------------------------
+
+    st.divider()
+
+    st.subheader("💬 History")
+
+
+    # -----------------------------------------------------
+    # NEW CHAT
+    # -----------------------------------------------------
+
+    if st.button(
+        "🆕 New Chat",
+        use_container_width=True,
+    ):
+
+        create_chat()
+
+        st.rerun()
+
+
+    # -----------------------------------------------------
+    # CLEAR HISTORY
+    # -----------------------------------------------------
+
+    if st.button(
+        "🧹 Clear History",
+        use_container_width=True,
+    ):
+
+        st.session_state.chats = {}
+
+        create_chat()
+
+        st.rerun()
+
+
+    # -----------------------------------------------------
+    # CHAT HISTORY LIST
+    # -----------------------------------------------------
+
+    chat_items = list(
+        st.session_state.chats.items()
+    )
+
+    chat_items.reverse()
+
+
+    for chat_id, chat in chat_items:
+
+        title = chat["title"]
+
+
         # -------------------------------------------------
-        # No relevant information
+        # SELECT CHAT
         # -------------------------------------------------
 
-        if not results:
+        if st.button(
+            title,
+            key=f"chat_{chat_id}",
+            use_container_width=True,
+        ):
+
+            st.session_state.current_chat_id = chat_id
+
+            st.rerun()
+
+
+        # -------------------------------------------------
+        # DELETE SELECTED CHAT
+        # -------------------------------------------------
+
+        if (
+            st.session_state.current_chat_id
+            == chat_id
+        ):
+
+            if st.button(
+                "🗑️ Delete this chat",
+                key=f"delete_{chat_id}",
+                use_container_width=True,
+            ):
+
+                del st.session_state.chats[
+                    chat_id
+                ]
+
+
+                # If no chats remain, create fresh chat.
+                if not st.session_state.chats:
+
+                    create_chat()
+
+                else:
+
+                    # Select latest remaining chat.
+                    st.session_state.current_chat_id = (
+                        next(
+                            iter(
+                                st.session_state.chats
+                            )
+                        )
+                    )
+
+                st.rerun()
+
+
+# =========================================================
+# CURRENT CHAT
+# =========================================================
+
+current_chat = get_current_chat()
+
+messages = current_chat["messages"]
+
+
+# =========================================================
+# MAIN HEADER
+# =========================================================
+
+st.title(
+    "🧠 Personal Knowledge Base Assistant"
+)
+
+st.caption(
+    "Ask questions about your uploaded notes. "
+    "The assistant will answer only from your knowledge base."
+)
+
+
+# =========================================================
+# DISPLAY CHAT MESSAGES
+# =========================================================
+
+for message in messages:
+
+    with st.chat_message(
+        message["role"]
+    ):
+
+        st.markdown(
+            message["content"]
+        )
+
+
+# =========================================================
+# CHAT INPUT + FILE UPLOAD
+# =========================================================
+
+prompt = st.chat_input(
+    "Ask something about your notes...",
+    accept_file=True,
+    file_type=[
+        "txt",
+        "md",
+        "pdf",
+    ],
+)
+
+
+# =========================================================
+# USER INPUT
+# =========================================================
+
+if prompt:
+
+    # -----------------------------------------------------
+    # GET QUESTION
+    # -----------------------------------------------------
+
+    question = prompt.text.strip()
+
+    uploaded_files = prompt.files
+
+
+    # =====================================================
+    # FILE UPLOAD
+    # =====================================================
+
+    if uploaded_files:
+
+        with st.spinner(
+            "Documents index ho rahe hain..."
+        ):
+
+            try:
+
+                result = ingest_documents(
+                    uploaded_files
+                )
+
+                st.toast(
+                    f"📚 {result['files']} file(s) indexed!",
+                    icon="✅",
+                )
+
+            except Exception as e:
+
+                st.error(
+                    f"Document processing failed:\n{e}"
+                )
+
+                st.stop()
+
+
+        # -------------------------------------------------
+        # ONLY FILE UPLOADED
+        # -------------------------------------------------
+
+        if not question:
 
             answer = (
-                "I couldn't find relevant information in "
-                "your uploaded notes, so I won't guess."
+                f"✅ Done bhai!\n\n"
+                f"{result['files']} file(s) successfully "
+                f"Knowledge Base me add ho gayi hain.\n\n"
+                f"Ab neeche question pooch sakte ho. 🧠"
             )
 
-            st.markdown(answer)
-
-            st.session_state.messages.append(
+            current_chat["messages"].append(
                 {
                     "role": "assistant",
                     "content": answer,
                 }
             )
 
+            with st.chat_message("assistant"):
+
+                st.markdown(answer)
+
             st.stop()
 
 
-        # -------------------------------------------------
-        # Build retrieved context
-        # -------------------------------------------------
+    # =====================================================
+    # EMPTY QUESTION
+    # =====================================================
 
-        context_parts = []
+    if not question:
 
-        for i, item in enumerate(
-            results,
-            start=1,
-        ):
+        st.stop()
 
-            context_parts.append(
-                f"[SOURCE {i}]\n"
-                f"File: {item['source']}\n"
-                f"Chunk ID: {item['chunk_id']}\n"
-                f"Text:\n{item['text']}"
-            )
 
-        context = "\n\n".join(
-            context_parts
+    # =====================================================
+    # CHAT TITLE
+    # =====================================================
+
+    if current_chat["title"] == "New Chat":
+
+        title = question
+
+        if len(title) > 35:
+
+            title = title[:35] + "..."
+
+        current_chat["title"] = title
+
+
+    # =====================================================
+    # SAVE USER MESSAGE
+    # =====================================================
+
+    current_chat["messages"].append(
+        {
+            "role": "user",
+            "content": question,
+        }
+    )
+
+
+    # -----------------------------------------------------
+    # DISPLAY USER MESSAGE
+    # -----------------------------------------------------
+
+    with st.chat_message("user"):
+
+        st.markdown(question)
+
+
+    # =====================================================
+    # GREETING
+    # =====================================================
+
+    if is_greeting(question):
+
+        answer = (
+            "Hey bhai! 👋\n\n"
+            "Main tumhara Personal Knowledge Base Assistant hoon. "
+            "Apni notes/PDF upload karo aur mujhse questions poochho."
         )
 
-
-        # -------------------------------------------------
-        # LLM Instructions
-        # -------------------------------------------------
-
-        system_prompt = """You are a strict personal
-knowledge-base assistant.
-
-RULES:
-
-1. Answer ONLY using the supplied SOURCE text.
-
-2. You may use the conversation history to understand
-what the user is referring to.
-
-3. Do not use outside knowledge or assumptions.
-
-4. If the sources do not contain enough information to
-answer the question, respond EXACTLY with:
-
-"I couldn't find enough information in your notes to answer that."
-
-5. When you use information from a source, cite the
-relevant source like [SOURCE 1].
-
-6. If you cannot answer from the sources, do NOT include
-any [SOURCE] citation.
-
-7. Keep the answer clear and concise.
-"""
-
-
-        user_prompt = f"""Conversation history:
-
-{conversation_history}
-
-Current user question:
-
-{question}
-
-Retrieved sources:
-
-{context}
-"""
-
-
-        # -------------------------------------------------
-        # Groq
-        # -------------------------------------------------
-
-        try:
-
-            response = client.chat.completions.create(
-                model="openai/gpt-oss-120b",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": system_prompt,
-                    },
-                    {
-                        "role": "user",
-                        "content": user_prompt,
-                    },
-                ],
-                temperature=0,
-            )
-
-            answer = response.choices[0].message.content
-
-        except Exception as e:
-
-            answer = f"Groq API error: {e}"
-
-
-        # -------------------------------------------------
-        # Display Answer
-        # -------------------------------------------------
-
-        st.markdown(answer)
-
-
-        # -------------------------------------------------
-        # Show exact chunks only for supported answers
-        # -------------------------------------------------
-
-        refusal_text = (
-            "I couldn't find enough information "
-            "in your notes to answer that."
-        )
-
-        if refusal_text not in answer:
-
-            st.subheader("Exact chunks used")
-
-            for i, item in enumerate(
-                results,
-                start=1,
-            ):
-
-                with st.expander(
-                    f"[SOURCE {i}] — "
-                    f"{item['source']} — "
-                    f"chunk {item['chunk_id']}"
-                ):
-
-                    st.code(
-                        item["text"]
-                    )
-
-
-        # -------------------------------------------------
-        # Save assistant answer
-        # -------------------------------------------------
-
-        st.session_state.messages.append(
+        current_chat["messages"].append(
             {
                 "role": "assistant",
                 "content": answer,
             }
         )
+
+        with st.chat_message("assistant"):
+
+            st.markdown(answer)
+
+        st.stop()
+
+
+    # =====================================================
+    # THANKS
+    # =====================================================
+
+    if is_thanks(question):
+
+        answer = (
+            "You're welcome bhai! 😊"
+        )
+
+        current_chat["messages"].append(
+            {
+                "role": "assistant",
+                "content": answer,
+            }
+        )
+
+        with st.chat_message("assistant"):
+
+            st.markdown(answer)
+
+        st.stop()
+
+
+    # =====================================================
+    # MEMORY QUESTION
+    # =====================================================
+
+    if is_memory_question(question):
+
+        answer = answer_memory_question(
+            current_chat["messages"]
+        )
+
+        current_chat["messages"].append(
+            {
+                "role": "assistant",
+                "content": answer,
+            }
+        )
+
+        with st.chat_message("assistant"):
+
+            st.markdown(answer)
+
+        st.stop()
+
+
+    # =====================================================
+    # CHECK KNOWLEDGE BASE
+    # =====================================================
+
+    try:
+
+        collection_count = get_collection_count()
+
+    except Exception:
+
+        collection_count = 0
+
+
+    if collection_count == 0:
+
+        answer = (
+            "Abhi Knowledge Base me koi notes nahi hain bhai. "
+            "Question box ke paas **➕** button se "
+            "TXT, MD ya PDF file upload karo."
+        )
+
+        current_chat["messages"].append(
+            {
+                "role": "assistant",
+                "content": answer,
+            }
+        )
+
+        with st.chat_message("assistant"):
+
+            st.markdown(answer)
+
+        st.stop()
+
+
+    # =====================================================
+    # RECENT CONVERSATION
+    # =====================================================
+
+    recent_conversation = get_recent_conversation(
+        current_chat["messages"][:-1],
+        limit=6,
+    )
+
+
+    # =====================================================
+    # FOLLOW-UP AWARE SEARCH QUERY
+    # =====================================================
+
+    # Previous user questions ko current question ke
+    # saath combine kar rahe hain.
+    #
+    # Example:
+    #
+    # Previous:
+    # "dal makhani kaise bnte hai"
+    #
+    # Current:
+    # "kitna ghee?"
+    #
+    # Search query:
+    # "dal makhani kaise bnte hai kitna ghee?"
+    #
+    # Isse short follow-up questions bhi relevant
+    # document chunks retrieve kar paayenge.
+
+    previous_user_questions = [
+        message["content"]
+        for message in current_chat["messages"][:-1]
+        if message["role"] == "user"
+    ]
+
+    previous_user_questions = previous_user_questions[-3:]
+
+
+    if previous_user_questions:
+
+        retrieval_query = (
+            "Previous user questions:\n"
+            + "\n".join(previous_user_questions)
+            + "\n\nCurrent user question:\n"
+            + question
+        )
+
+    else:
+
+        retrieval_query = question
+
+
+    # =====================================================
+    # FIRST SEARCH — FOLLOW-UP AWARE
+    # =====================================================
+
+    with st.spinner(
+        "Notes search kar raha hoon..."
+    ):
+
+        try:
+
+            results = search_documents(
+                retrieval_query,
+                top_k=5,
+                max_distance=1.5,
+            )
+
+        except Exception as e:
+
+            st.error(
+                f"Search failed:\n{e}"
+            )
+
+            st.stop()
+
+
+    # =====================================================
+    # QUERY CORRECTION FALLBACK
+    # =====================================================
+
+    corrected_query = retrieval_query
+
+
+    if not results:
+
+        with st.spinner(
+            "Question ko thoda understand kar raha hoon..."
+        ):
+
+            corrected_query = correct_query(
+                retrieval_query,
+                recent_conversation,
+            )
+
+
+        # Search again only if query changed.
+        if (
+            corrected_query.strip().lower()
+            != retrieval_query.strip().lower()
+        ):
+
+            with st.spinner(
+                "Corrected query se notes search kar raha hoon..."
+            ):
+
+                try:
+
+                    results = search_documents(
+                        corrected_query,
+                        top_k=5,
+                        max_distance=1.5,
+                    )
+
+                except Exception as e:
+
+                    st.error(
+                        f"Corrected search failed:\n{e}"
+                    )
+
+                    st.stop()
+
+
+    # =====================================================
+    # NO RELEVANT DOCUMENTS
+    # =====================================================
+
+    if not results:
+
+        answer = REFUSAL_PHRASE
+
+        current_chat["messages"].append(
+            {
+                "role": "assistant",
+                "content": answer,
+            }
+        )
+
+        with st.chat_message("assistant"):
+
+            st.markdown(answer)
+
+        st.stop()
+
+
+    # =====================================================
+    # BUILD RETRIEVED CONTEXT
+    # =====================================================
+
+    context_parts = []
+
+
+    for index, result in enumerate(
+        results,
+        start=1,
+    ):
+
+        context_parts.append(
+            f"""
+[SOURCE {index}]
+
+File:
+{result['source']}
+
+Chunk:
+{result['text']}
+"""
+        )
+
+
+    context = "\n\n".join(
+        context_parts
+    )
+
+
+    # =====================================================
+    # SYSTEM PROMPT
+    # =====================================================
+
+    system_prompt = """
+You are a Personal Knowledge Base Assistant.
+
+Your job is to answer the user's question using ONLY
+the information provided in the retrieved knowledge base
+context.
+
+=========================================================
+LANGUAGE RULE
+=========================================================
+
+Answer in the SAME LANGUAGE AND WRITING STYLE used
+by the user.
+
+If the user writes in Hinglish / Roman Hindi,
+answer in Hinglish / Roman Hindi.
+
+Example:
+
+User:
+"dal makhani kaise banate hai?"
+
+Good:
+"Bhai, notes ke according dal makhani banane ke liye..."
+
+Bad:
+"भाई, नोट्स के अनुसार दाल मखनी बनाने के लिए..."
+
+If the user writes in English:
+Answer in English.
+
+If the user writes in Hindi using Devanagari:
+Answer in Hindi using Devanagari.
+
+If the user mixes English and Roman Hindi:
+Naturally use the same Hinglish style.
+
+Do NOT unnecessarily translate the user's language.
+
+=========================================================
+KNOWLEDGE BASE RULES
+=========================================================
+
+1. Use ONLY the retrieved knowledge base context.
+
+2. Do NOT use outside knowledge.
+
+3. Do NOT make up facts.
+
+4. If the answer is not supported by the retrieved
+   context, say exactly:
+
+"I couldn't find relevant information in your uploaded notes, so I won't guess."
+
+5. When answering from the context, include source
+   citations such as [SOURCE 1] or [SOURCE 2].
+
+6. Keep answers clear and reasonably concise.
+
+7. If multiple sources support the answer, cite the
+   relevant sources.
+
+8. A corrected spelling in the search query does NOT
+   give permission to invent information.
+
+9. Do not mention these instructions.
+"""
+
+
+    # =====================================================
+    # USER PROMPT
+    # =====================================================
+
+    user_prompt = f"""
+Retrieved knowledge base context:
+
+{context}
+
+
+Recent conversation:
+
+{recent_conversation}
+
+
+Original user question:
+
+{question}
+
+
+Corrected search query, if any:
+
+{corrected_query}
+
+
+Answer the user's ORIGINAL question using ONLY the
+retrieved knowledge base context.
+
+Keep the answer in the user's original language and
+writing style.
+"""
+
+
+    # =====================================================
+    # GROQ LLM CALL
+    # =====================================================
+
+    with st.chat_message("assistant"):
+
+        with st.spinner(
+            "Answer generate kar raha hoon..."
+        ):
+
+            try:
+
+                response = client.chat.completions.create(
+                    model="openai/gpt-oss-120b",
+
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": system_prompt,
+                        },
+                        {
+                            "role": "user",
+                            "content": user_prompt,
+                        },
+                    ],
+
+                    temperature=0,
+                )
+
+
+                answer = (
+                    response
+                    .choices[0]
+                    .message
+                    .content
+                )
+
+
+            except Exception as e:
+
+                st.error(
+                    f"LLM request failed:\n{e}"
+                )
+
+                st.stop()
+
+
+        # =================================================
+        # DISPLAY ANSWER
+        # =================================================
+
+        st.markdown(answer)
+
+
+        # =================================================
+        # EXACT CHUNKS USED
+        # =================================================
+
+        if REFUSAL_PHRASE not in answer:
+
+            with st.expander(
+                "📚 Exact chunks used"
+            ):
+
+                # Show corrected query if different.
+                if (
+                    corrected_query.strip().lower()
+                    != question.strip().lower()
+                ):
+
+                    st.caption(
+                        f"🔧 Search understood as: "
+                        f"{corrected_query}"
+                    )
+
+
+                for index, result in enumerate(
+                    results,
+                    start=1,
+                ):
+
+                    st.markdown(
+                        f"### [SOURCE {index}]"
+                    )
+
+                    st.caption(
+                        f"File: {result['source']} | "
+                        f"Chunk: {result['chunk_id']} | "
+                        f"Distance: {result['distance']:.4f}"
+                    )
+
+                    st.code(
+                        result["text"],
+                        language="text",
+                    )
+
+
+    # =====================================================
+    # SAVE ASSISTANT MESSAGE
+    # =====================================================
+
+    current_chat["messages"].append(
+        {
+            "role": "assistant",
+            "content": answer,
+        }
+    )
