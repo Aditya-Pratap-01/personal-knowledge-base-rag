@@ -223,3 +223,18 @@ def clear_collection():
 
     _chroma_client.delete_collection("knowledge_base")
     _collection = None
+
+def ingest_local_notes():
+    files = [
+        path
+        for path in NOTES_DIR.iterdir()
+        if path.is_file() and path.suffix.lower() in [".txt", ".md", ".pdf"]
+    ]
+
+    if not files:
+        return {
+            "files": 0,
+            "chunks": 0,
+        }
+
+    return ingest_documents(files)

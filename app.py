@@ -6,6 +6,7 @@ import uuid
 
 from rag import (
     ingest_documents,
+    ingest_local_notes,
     search_documents,
     get_collection_count,
     clear_collection,
@@ -339,7 +340,19 @@ User query:
         # If correction fails, use original query.
         return question
 
+# =========================================================
+# AUTO-INDEX LOCAL NOTES
+# =========================================================
 
+if "local_notes_indexed" not in st.session_state:
+    with st.spinner("📚 Knowledge base prepare ho raha hai..."):
+        try:
+            result = ingest_local_notes()
+            st.session_state.local_notes_indexed = True
+        except Exception as e:
+            st.error(f"Notes indexing failed:\n{e}")
+            st.stop()
+            
 # =========================================================
 # SESSION STATE
 # =========================================================
