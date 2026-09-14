@@ -1,0 +1,18 @@
+Laptop Purchase Research Notes
+
+Shortlisted options:
+1. Option A - 16GB RAM, 512GB SSD, mid-range dedicated GPU, ~1.8 kg weight,
+   good for light gaming and video editing, battery life around 6 hours under load.
+2. Option B - 16GB RAM, 1TB SSD, integrated graphics only, ~1.3 kg weight,
+   great battery life (~10 hours), better for productivity/travel, not for gaming.
+3. Option C - 32GB RAM, 1TB SSD, higher-end GPU, heavier at 2.3 kg, best
+   performance for video editing and occasional gaming but loud fans under load.
+
+Priorities: portability and battery life matter more than raw gaming performance
+right now, but video editing capability is a must for YouTube work.
+
+Leaning towards Option A as the middle ground, but want to check user reviews
+on thermal throttling under sustained editing/export workloads before deciding.
+
+Budget ceiling in mind: comparable to a flagship smartphone-level spend, want
+good resale value after 2-3 years too.

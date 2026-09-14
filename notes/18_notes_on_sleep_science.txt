@@ -1,0 +1,19 @@
+Notes on Sleep Science (from articles read)
+
+Sleep cycles last roughly 90 minutes each, cycling through light sleep, deep
+sleep, and REM sleep. Deep sleep is when most physical recovery happens,
+REM sleep is linked to memory consolidation and dreaming.
+
+Consistency matters more than people think - going to bed and waking up at
+the same time daily (even on weekends) helps regulate the circadian rhythm
+better than just getting a fixed number of hours inconsistently.
+
+Blue light from screens close to bedtime can delay melatonin release, pushing
+the body's natural sleep signal later. Using night mode or avoiding screens
+30-60 minutes before bed is commonly recommended.
+
+Caffeine has a half-life of roughly 5-6 hours, so a coffee at 4 PM can still
+affect sleep onset at 10 PM for many people.
+
+Practical takeaway noted: aim for a consistent wind-down routine (dim lights,
+no screens, maybe reading) starting about 45 minutes before intended sleep time.

@@ -1,0 +1,21 @@
+Tech Troubleshooting Log
+
+Issue: Wi-Fi router randomly disconnecting every few hours.
+Fix attempted: changed wireless channel from auto to a fixed less-congested
+channel (channel 6 for 2.4GHz), reduced dropouts significantly.
+Also updated router firmware to the latest version, which resolved a known
+bug mentioned in release notes about DHCP lease renewal causing drops.
+
+Issue: External hard drive not detected on one USB port.
+Fix: turned out to be a power delivery issue on a USB 3.0 port when drive
+was daisy-chained through a hub. Connecting directly to a rear USB port
+on the PC (higher power output) fixed it consistently.
+
+Issue: Webcam lag during video calls with poor lighting.
+Fix: added a small ring light setup, dramatically improved video quality
+without needing to change camera hardware since better lighting reduces
+the sensor's need to compensate digitally.
+
+Issue: Printer showing offline despite being powered on and connected.
+Fix: printer spooler service needed a restart on the PC; also cleared
+old stuck print jobs from the queue which was blocking new ones.
