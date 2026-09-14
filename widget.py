@@ -1,5 +1,6 @@
 import os
 import html
+import time
 
 import streamlit as st
 from dotenv import load_dotenv
@@ -24,7 +25,7 @@ st.set_page_config(
 
 
 # =========================================================
-# CUSTOM UI
+# CUSTOM UI / CSS
 # =========================================================
 
 st.html(
@@ -39,7 +40,6 @@ st.html(
     body {
         margin: 0 !important;
         padding: 0 !important;
-
         background: #f4f6fb !important;
     }
 
@@ -53,41 +53,101 @@ st.html(
 
     [data-testid="stMainBlockContainer"] {
         background: #f4f6fb !important;
-
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
-
-        padding-left: 12px !important;
-        padding-right: 12px !important;
+        padding: 0 !important;
     }
 
     .block-container {
         max-width: 100% !important;
-
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
 
     /* =====================================================
-       HIDE STREAMLIT DEFAULT ELEMENTS
+       HIDE STREAMLIT DEFAULT UI
     ===================================================== */
 
     header {
+        display: none !important;
         visibility: hidden !important;
         height: 0 !important;
     }
 
     #MainMenu {
+        display: none !important;
         visibility: hidden !important;
     }
 
-    footer {
+    footer,
+    [data-testid="stFooter"] {
+        display: none !important;
         visibility: hidden !important;
+
         height: 0 !important;
+        min-height: 0 !important;
+
+        padding: 0 !important;
+        margin: 0 !important;
+
+        border: none !important;
+    }
+
+
+    /* =====================================================
+       STREAMLIT BOTTOM AREA
+    ===================================================== */
+
+    [data-testid="stBottom"] {
+        background: #f4f6fb !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    [data-testid="stBottomBlockContainer"] {
+        background: #f4f6fb !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+
+    /* =====================================================
+       CHAT SCROLL AREA
+       column-reverse keeps newest message at bottom.
+    ===================================================== */
+
+    .chat-scroll {
+        height: 455px;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        display: flex;
+
+        flex-direction: column-reverse;
+
+        padding:
+            10px
+            7px
+            12px
+            7px;
+
+        box-sizing: border-box;
+
+        overscroll-behavior: contain;
+    }
+
+    .chat-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .chat-scroll::-webkit-scrollbar-thumb {
+        background: #c5ccda;
+        border-radius: 10px;
     }
 
 
@@ -96,54 +156,43 @@ st.html(
     ===================================================== */
 
     .welcome-card {
-        background: #ffffff;
+        width: 100%;
 
-        border: 1px solid #dde3ee;
-
-        border-radius: 18px;
-
-        padding: 18px 18px;
-
-        margin: 4px 4px 16px 4px;
-
-        color: #19233b;
-
-        box-shadow:
-            0 4px 14px
-            rgba(20, 35, 60, 0.05);
-    }
-
-    .welcome-title {
-        font-size: 18px;
-
-        font-weight: 700;
-
-        color: #18233d;
-
-        margin-bottom: 9px;
-    }
-
-    .welcome-text {
-        font-size: 14px;
-
-        color: #5e687b;
-
-        line-height: 1.6;
-    }
-
-
-    /* =====================================================
-       CHAT AREA
-    ===================================================== */
-
-    .chat-area {
         display: flex;
 
-        flex-direction: column;
+        align-items: flex-end;
 
-        gap: 14px;
+        gap: 9px;
 
-        padding: 0 4px 10px 4px;
+        margin-bottom: 14px;
+    }
+
+    .welcome-bubble {
+        max-width: 78%;
+
+        padding:
+            13px
+            15px;
+
+        border-radius: 17px;
+
+        border-top-left-radius: 7px;
+
+        background: #ffffff;
+
+        color: #1c2942;
+
+        border:
+            1px solid
+            #dde3ee;
+
+        font-size: 14px;
+
+        line-height: 1.58;
+
+        box-shadow:
+            0 3px 10px
+            rgba(20, 35, 60, 0.05);
     }
 
 
@@ -159,6 +208,8 @@ st.html(
         align-items: flex-end;
 
         gap: 9px;
+
+        margin-bottom: 14px;
     }
 
     .message-row.assistant {
@@ -171,7 +222,7 @@ st.html(
 
 
     /* =====================================================
-       AVATAR
+       AVATARS
     ===================================================== */
 
     .avatar {
@@ -192,28 +243,35 @@ st.html(
 
     .assistant-avatar {
         background: #fff3f7;
+
         color: #173b67;
 
-        border: 1px solid #f1dce5;
+        border:
+            1px solid
+            #f1dce5;
     }
 
     .user-avatar {
         background: #ffffff;
 
-        border: 1px solid #d9dfeb;
+        border:
+            1px solid
+            #d9dfeb;
 
         font-size: 17px;
     }
 
 
     /* =====================================================
-       MESSAGE BUBBLE
+       MESSAGE BUBBLES
     ===================================================== */
 
     .message-bubble {
         max-width: 78%;
 
-        padding: 13px 15px;
+        padding:
+            13px
+            15px;
 
         border-radius: 17px;
 
@@ -261,7 +319,115 @@ st.html(
 
 
     /* =====================================================
-       INPUT AREA
+       TYPING INDICATOR
+    ===================================================== */
+
+    .typing-row {
+        width: 100%;
+
+        display: flex;
+
+        align-items: flex-end;
+
+        gap: 9px;
+
+        margin-bottom: 14px;
+    }
+
+    .typing-avatar {
+        width: 36px;
+        height: 36px;
+
+        min-width: 36px;
+
+        border-radius: 11px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        background: #fff3f7;
+
+        border:
+            1px solid
+            #f1dce5;
+
+        font-size: 19px;
+    }
+
+    .typing-bubble {
+        background: #ffffff;
+
+        border:
+            1px solid
+            #dde3ee;
+
+        border-radius: 17px;
+
+        border-top-left-radius: 7px;
+
+        padding:
+            13px
+            17px;
+
+        min-width: 70px;
+
+        box-shadow:
+            0 3px 10px
+            rgba(20, 35, 60, 0.05);
+    }
+
+    .typing-dots {
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 5px;
+    }
+
+    .typing-dot {
+        width: 7px;
+        height: 7px;
+
+        border-radius: 50%;
+
+        background: #c9ced8;
+
+        animation:
+            typingBounce
+            1.2s
+            infinite
+            ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) {
+        animation-delay: 0.15s;
+    }
+
+    .typing-dot:nth-child(3) {
+        animation-delay: 0.30s;
+    }
+
+    @keyframes typingBounce {
+
+        0%,
+        60%,
+        100% {
+            transform: translateY(0);
+            opacity: 0.45;
+        }
+
+        30% {
+            transform: translateY(-4px);
+            opacity: 1;
+        }
+    }
+
+
+    /* =====================================================
+       INPUT HEADING
     ===================================================== */
 
     .input-heading {
@@ -278,11 +444,10 @@ st.html(
 
 
     /* =====================================================
-       STREAMLIT FORM
+       INPUT FORM
     ===================================================== */
 
     div[data-testid="stForm"] {
-
         background: #ffffff !important;
 
         border:
@@ -295,14 +460,17 @@ st.html(
         padding:
             8px !important;
 
+        margin-top:
+            0 !important;
+
         box-shadow:
             0 4px 15px
             rgba(20, 35, 60, 0.06) !important;
     }
 
     div[data-testid="stForm"] > div {
-
-        background: transparent !important;
+        background:
+            transparent !important;
     }
 
 
@@ -311,18 +479,16 @@ st.html(
     ===================================================== */
 
     div[data-testid="stTextInput"] {
-
         margin-bottom: 0 !important;
     }
 
     div[data-testid="stTextInput"] label {
-
         display: none !important;
     }
 
     div[data-testid="stTextInput"] > div {
-
-        background: #ffffff !important;
+        background:
+            #ffffff !important;
 
         border: none !important;
 
@@ -330,8 +496,8 @@ st.html(
     }
 
     div[data-testid="stTextInput"] input {
-
-        background: #ffffff !important;
+        background:
+            #ffffff !important;
 
         border:
             1px solid
@@ -340,21 +506,24 @@ st.html(
         border-radius:
             13px !important;
 
-        color: #1b2740 !important;
+        color:
+            #1b2740 !important;
 
-        font-size: 14px !important;
+        font-size:
+            14px !important;
 
         padding:
             12px
             14px !important;
 
-        min-height: 44px !important;
+        min-height:
+            44px !important;
 
-        box-shadow: none !important;
+        box-shadow:
+            none !important;
     }
 
     div[data-testid="stTextInput"] input:focus {
-
         border-color:
             #315d91 !important;
 
@@ -364,24 +533,27 @@ st.html(
     }
 
     div[data-testid="stTextInput"] input::placeholder {
-
-        color: #8a93a5 !important;
+        color:
+            #8a93a5 !important;
     }
 
 
     /* =====================================================
-       BUTTONS
+       SEND BUTTON
     ===================================================== */
 
     div[data-testid="stFormSubmitButton"] button {
+        height:
+            44px !important;
 
-        height: 44px !important;
+        min-width:
+            48px !important;
 
-        min-width: 48px !important;
+        border:
+            none !important;
 
-        border: none !important;
-
-        border-radius: 13px !important;
+        border-radius:
+            13px !important;
 
         background:
             linear-gradient(
@@ -390,17 +562,20 @@ st.html(
                 #244e85
             ) !important;
 
-        color: #ffffff !important;
+        color:
+            #ffffff !important;
 
-        font-size: 18px !important;
+        font-size:
+            18px !important;
 
-        font-weight: 600 !important;
+        font-weight:
+            600 !important;
 
-        box-shadow: none !important;
+        box-shadow:
+            none !important;
     }
 
     div[data-testid="stFormSubmitButton"] button:hover {
-
         background:
             linear-gradient(
                 135deg,
@@ -411,27 +586,69 @@ st.html(
 
 
     /* =====================================================
+       DISCLAIMER
+    ===================================================== */
+
+    .custom-disclaimer {
+        text-align:
+            center;
+
+        color:
+            #8a93a5;
+
+        font-size:
+            10px;
+
+        line-height:
+            1.4;
+
+        padding:
+            7px
+            8px
+            4px
+            8px;
+
+        margin:
+            0;
+    }
+
+
+    /* =====================================================
        MOBILE
     ===================================================== */
 
     @media (max-width: 600px) {
 
-        .message-bubble {
-            max-width: 82%;
+        .chat-scroll {
+            height:
+                430px;
+
+            flex-direction:
+                column-reverse;
         }
 
-        .avatar {
-            width: 33px;
-            height: 33px;
-
-            min-width: 33px;
+        .message-bubble,
+        .welcome-bubble {
+            max-width:
+                82%;
         }
 
-        .welcome-card {
-            margin-left: 2px;
-            margin-right: 2px;
+        .avatar,
+        .typing-avatar {
+            width:
+                33px;
+
+            height:
+                33px;
+
+            min-width:
+                33px;
         }
 
+        .custom-disclaimer {
+            font-size:
+                9px;
+        }
     }
 
     </style>
@@ -453,13 +670,11 @@ GROQ_API_KEY = os.getenv(
 if not GROQ_API_KEY:
 
     try:
-
         GROQ_API_KEY = st.secrets.get(
             "GROQ_API_KEY"
         )
 
     except Exception:
-
         GROQ_API_KEY = None
 
 
@@ -507,39 +722,51 @@ if "widget_notes_indexed" not in st.session_state:
 # =========================================================
 
 if "messages" not in st.session_state:
-
     st.session_state.messages = []
 
 
 # =========================================================
-# WELCOME
+# HELPER FUNCTIONS
 # =========================================================
 
-if "welcome_shown" not in st.session_state:
+def is_greeting(text):
 
-    st.html(
-        """
-        <div class="welcome-card">
+    greetings = {
+        "hi",
+        "hii",
+        "hiii",
+        "hello",
+        "hey",
+        "hey bhai",
+        "namaste",
+        "good morning",
+        "good afternoon",
+        "good evening",
+    }
 
-            <div class="welcome-title">
-                Hi! 👋
-            </div>
-
-            <div class="welcome-text">
-                Ask me anything about your uploaded
-                knowledge base.
-            </div>
-
-        </div>
-        """
+    return (
+        text.lower().strip()
+        in greetings
     )
 
-    st.session_state.welcome_shown = True
 
+def is_thanks(text):
 
-# =========================================================
-# MESSAGE RENDERER
-# =========================================================
+    thanks_words = {
+        "thanks",
+        "thank you",
+        "thankyou",
+        "thx",
+        "ty",
+        "thanks bhai",
+        "thank you bhai",
+    }
+
+    return (
+        text.lower().strip()
+        in thanks_words
+    )
+
 
 def render_message(
     role,
@@ -555,108 +782,166 @@ def render_message(
 
     if role == "user":
 
-        st.html(
-            f"""
-            <div class="message-row user">
+        return f"""
+        <div class="message-row user">
 
-                <div class="message-bubble user-bubble">
-                    {safe_content}
-                </div>
+            <div class="message-bubble user-bubble">
+                {safe_content}
+            </div>
 
-                <div class="avatar user-avatar">
-                    👤
-                </div>
+            <div class="avatar user-avatar">
+                👤
+            </div>
+
+        </div>
+        """
+
+    return f"""
+    <div class="message-row assistant">
+
+        <div class="avatar assistant-avatar">
+            🧠
+        </div>
+
+        <div class="message-bubble assistant-bubble">
+            {safe_content}
+        </div>
+
+    </div>
+    """
+
+
+def render_typing():
+
+    return """
+    <div class="typing-row">
+
+        <div class="typing-avatar">
+            🧠
+        </div>
+
+        <div class="typing-bubble">
+
+            <div class="typing-dots">
+
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
 
             </div>
-            """
+
+        </div>
+
+    </div>
+    """
+
+
+def render_welcome():
+
+    return """
+    <div class="welcome-card">
+
+        <div class="avatar assistant-avatar">
+            🧠
+        </div>
+
+        <div class="welcome-bubble">
+
+            <strong>
+                Hi! 👋
+            </strong>
+
+            <br><br>
+
+            Ask me anything about your uploaded
+            knowledge base.
+
+        </div>
+
+    </div>
+    """
+
+
+# =========================================================
+# BUILD CHAT HTML
+#
+# IMPORTANT:
+# With column-reverse:
+# newest content must come FIRST in the DOM.
+# =========================================================
+
+def build_chat_html(
+    messages,
+    show_typing=False,
+):
+
+    parts = []
+
+
+    # -----------------------------------------------------
+    # TYPING IS THE NEWEST ELEMENT
+    # -----------------------------------------------------
+
+    if show_typing:
+
+        parts.append(
+            render_typing()
         )
 
-    else:
 
-        st.html(
-            f"""
-            <div class="message-row assistant">
+    # -----------------------------------------------------
+    # ADD MESSAGES FROM NEWEST TO OLDEST
+    # -----------------------------------------------------
 
-                <div class="avatar assistant-avatar">
-                    🧠
-                </div>
+    for message in reversed(messages):
 
-                <div class="message-bubble assistant-bubble">
-                    {safe_content}
-                </div>
-
-            </div>
-            """
+        parts.append(
+            render_message(
+                message["role"],
+                message["content"],
+            )
         )
 
 
-# =========================================================
-# CHAT HISTORY
-# =========================================================
+    # -----------------------------------------------------
+    # WELCOME GOES AT VISUAL TOP
+    # -----------------------------------------------------
 
-for message in st.session_state.messages:
-
-    render_message(
-        message["role"],
-        message["content"],
+    parts.append(
+        render_welcome()
     )
 
 
-# =========================================================
-# GREETING
-# =========================================================
-
-def is_greeting(text):
-
-    greetings = {
-
-        "hi",
-        "hii",
-        "hiii",
-        "hello",
-        "hey",
-        "hey bhai",
-        "namaste",
-
-        "good morning",
-        "good afternoon",
-        "good evening",
-
-    }
-
-    return (
-        text.lower().strip()
-        in greetings
-    )
+    return "\n".join(parts)
 
 
 # =========================================================
-# THANKS
+# CHAT PLACEHOLDER
 # =========================================================
 
-def is_thanks(text):
-
-    thanks_words = {
-
-        "thanks",
-        "thank you",
-        "thankyou",
-        "thx",
-        "ty",
-
-        "thanks bhai",
-        "thank you bhai",
-
-    }
-
-    return (
-        text.lower().strip()
-        in thanks_words
-    )
+chat_placeholder = st.empty()
 
 
 # =========================================================
-# INPUT LABEL
+# INITIAL CHAT
+# =========================================================
+
+chat_placeholder.html(
+    f"""
+    <div class="chat-scroll">
+
+        {build_chat_html(
+            st.session_state.messages,
+            show_typing=False,
+        )}
+
+    </div>
+    """
+)
+
+
+# =========================================================
+# INPUT HEADING
 # =========================================================
 
 st.html(
@@ -669,7 +954,7 @@ st.html(
 
 
 # =========================================================
-# CUSTOM INPUT FORM
+# INPUT FORM
 # =========================================================
 
 with st.form(
@@ -677,18 +962,13 @@ with st.form(
     clear_on_submit=True,
 ):
 
-    col1, col2, col3 = st.columns(
-        [0.08, 0.82, 0.10],
+    col1, col2 = st.columns(
+        [0.88, 0.12],
         vertical_alignment="center",
     )
 
 
     with col1:
-
-        st.write("🎙️")
-
-
-    with col2:
 
         question = st.text_input(
             "Question",
@@ -697,12 +977,26 @@ with st.form(
         )
 
 
-    with col3:
+    with col2:
 
         submitted = st.form_submit_button(
             "➤",
             use_container_width=True,
         )
+
+
+# =========================================================
+# DISCLAIMER
+# =========================================================
+
+st.html(
+    """
+    <div class="custom-disclaimer">
+        This chatbot uses AI to generate responses and may
+        occasionally make mistakes.
+    </div>
+    """
+)
 
 
 # =========================================================
@@ -715,19 +1009,47 @@ if submitted and question.strip():
 
 
     # =====================================================
-    # SAVE USER MESSAGE
+    # USER MESSAGE APPEARS IMMEDIATELY
     # =====================================================
 
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": question,
-        }
+    updated_messages = (
+        st.session_state.messages
+        + [
+            {
+                "role": "user",
+                "content": question,
+            }
+        ]
     )
 
 
     # =====================================================
-    # GREETING
+    # SHOW USER + TYPING INDICATOR
+    # =====================================================
+
+    chat_placeholder.html(
+        f"""
+        <div class="chat-scroll">
+
+            {build_chat_html(
+                updated_messages,
+                show_typing=True,
+            )}
+
+        </div>
+        """
+    )
+
+
+    # =====================================================
+    # WAIT 2 SECONDS
+    # =====================================================
+
+    time.sleep(2)
+
+
+    # =====================================================
+    # DETERMINE ANSWER
     # =====================================================
 
     if is_greeting(question):
@@ -739,10 +1061,6 @@ if submitted and question.strip():
         )
 
 
-    # =====================================================
-    # THANKS
-    # =====================================================
-
     elif is_thanks(question):
 
         answer = (
@@ -751,10 +1069,6 @@ if submitted and question.strip():
             "about your knowledge base."
         )
 
-
-    # =====================================================
-    # RAG SEARCH
-    # =====================================================
 
     else:
 
@@ -818,7 +1132,6 @@ User question:
                         messages=[
                             {
                                 "role": "system",
-
                                 "content": (
                                     "Answer questions only "
                                     "from the provided "
@@ -827,7 +1140,6 @@ User question:
                             },
                             {
                                 "role": "user",
-
                                 "content": prompt,
                             },
                         ],
@@ -855,19 +1167,85 @@ User question:
 
 
     # =====================================================
-    # SAVE ASSISTANT MESSAGE
+    # WORD-BY-WORD RESPONSE
     # =====================================================
 
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": answer,
-        }
+    words = answer.split()
+
+    streamed_answer = ""
+
+
+    for index, word in enumerate(words):
+
+        if index == 0:
+
+            streamed_answer = word
+
+        else:
+
+            streamed_answer += " " + word
+
+
+        animated_messages = (
+            updated_messages
+            + [
+                {
+                    "role": "assistant",
+                    "content": streamed_answer,
+                }
+            ]
+        )
+
+
+        # Newest assistant response is placed first
+        # in the DOM by build_chat_html(), so it stays
+        # at the bottom of the visual chat.
+        chat_placeholder.html(
+            f"""
+            <div class="chat-scroll">
+
+                {build_chat_html(
+                    animated_messages,
+                    show_typing=False,
+                )}
+
+            </div>
+            """
+        )
+
+
+        # FAST WORD-BY-WORD SPEED
+        time.sleep(0.03)
+
+
+    # =====================================================
+    # SAVE FINAL ANSWER
+    # =====================================================
+
+    st.session_state.messages = (
+        updated_messages
+        + [
+            {
+                "role": "assistant",
+                "content": answer,
+            }
+        ]
     )
 
 
     # =====================================================
-    # RERUN FOR CLEAN DISPLAY
+    # FINAL RENDER
     # =====================================================
 
-    st.rerun()
+    chat_placeholder.html(
+        f"""
+        <div class="chat-scroll">
+
+            {build_chat_html(
+                st.session_state.messages,
+                show_typing=False,
+            )}
+
+        </div>
+        """
+    )
