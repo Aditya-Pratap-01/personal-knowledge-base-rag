@@ -6,6 +6,10 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     margin: 0;
     min-height: 100vh;
@@ -17,17 +21,14 @@ body {
         sans-serif;
 
     background: #f5f6f8;
+
     color: #222;
 }
 
 
 /* =========================================================
-   DEMO WEBSITE
+   TOP BAR
 ========================================================= */
-
-.page {
-    min-height: 100vh;
-}
 
 .top-bar {
     background: #f1f1f1;
@@ -41,19 +42,28 @@ body {
     color: #555;
 
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
 }
 
 .top-links {
     display: flex;
+
     align-items: center;
-    gap: 18px;
+
+    gap: 16px;
 }
 
 .top-links span {
     cursor: pointer;
 }
+
+
+/* =========================================================
+   HEADER
+========================================================= */
 
 .header {
     background: #ffffff;
@@ -63,12 +73,15 @@ body {
     border-bottom: 4px solid #1f4f8a;
 
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 }
 
 .brand {
     display: flex;
+
     align-items: center;
 
     gap: 15px;
@@ -83,6 +96,7 @@ body {
     border-radius: 50%;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
@@ -118,6 +132,7 @@ body {
     padding: 0 7%;
 
     display: flex;
+
     align-items: center;
 }
 
@@ -137,7 +152,7 @@ body {
 
 
 /* =========================================================
-   MAIN CONTENT
+   MAIN
 ========================================================= */
 
 .container {
@@ -147,6 +162,11 @@ body {
 
     margin: 28px auto;
 }
+
+
+/* =========================================================
+   NOTICE
+========================================================= */
 
 .notice {
     background: #fff8df;
@@ -161,6 +181,11 @@ body {
 
     font-size: 14px;
 }
+
+
+/* =========================================================
+   HERO
+========================================================= */
 
 .hero {
     background: #ffffff;
@@ -198,6 +223,15 @@ body {
     line-height: 1.7;
 }
 
+.about-section {
+    margin-bottom: 40px;
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
 .hero-button {
     display: inline-block;
 
@@ -220,7 +254,7 @@ body {
 
 
 /* =========================================================
-   SERVICE CARDS
+   SERVICES
 ========================================================= */
 
 .section-title {
@@ -234,7 +268,8 @@ body {
 .cards {
     display: grid;
 
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns:
+        repeat(3, 1fr);
 
     gap: 18px;
 }
@@ -297,9 +332,11 @@ body {
     position: fixed;
 
     right: 25px;
+
     bottom: 25px;
 
     width: 62px;
+
     height: 62px;
 
     border: 1px solid #173b67;
@@ -315,19 +352,21 @@ body {
     cursor: pointer;
 
     box-shadow:
-        0 8px 28px rgba(0, 0, 0, 0.20);
+        0 8px 28px
+        rgba(0, 0, 0, 0.20);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
+
+    user-select: none;
 
     transition:
         transform 0.2s ease,
         background 0.2s ease;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    z-index: 9999;
 }
 
 .chat-button:hover {
@@ -345,19 +384,24 @@ body {
     position: fixed;
 
     right: 25px;
+
     bottom: 100px;
 
     width: 410px;
 
-    max-width: calc(100vw - 40px);
+    max-width:
+        calc(100vw - 40px);
 
     height: 640px;
 
-    max-height: calc(100vh - 130px);
+    max-height:
+        calc(100vh - 130px);
 
     background: #ffffff;
 
-    border: 1px solid #cfd5dd;
+    border:
+        1px solid
+        #cfd5dd;
 
     border-radius: 14px;
 
@@ -368,7 +412,8 @@ body {
     flex-direction: column;
 
     box-shadow:
-        0 18px 50px rgba(0, 0, 0, 0.24);
+        0 18px 50px
+        rgba(0, 0, 0, 0.24);
 
     z-index: 9998;
 }
@@ -379,11 +424,16 @@ body {
 ========================================================= */
 
 .chat-header {
-    flex: 0 0 58px;
+    flex: 0 0 62px;
 
-    min-height: 58px;
+    min-height: 62px;
 
-    background: #173b67;
+    background:
+        linear-gradient(
+            135deg,
+            #173b67,
+            #244e85
+        );
 
     color: #ffffff;
 
@@ -391,9 +441,15 @@ body {
 
     display: flex;
 
-    justify-content: space-between;
-
     align-items: center;
+
+    justify-content: space-between;
+}
+
+.chat-header-content {
+    display: flex;
+
+    flex-direction: column;
 }
 
 .chat-title {
@@ -407,36 +463,54 @@ body {
 
     font-size: 12px;
 
-    color: #cce7cf;
+    color: #d7f8e0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+}
+
+.status-dot {
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #4ade80;
+
+    display: inline-block;
 }
 
 .close-button {
-    width: 34px;
-    height: 34px;
+    width: 36px;
 
-    border: none;
-
-    border-radius: 6px;
-
-    background: transparent;
-
-    color: #ffffff;
-
-    font-size: 27px;
-
-    line-height: 1;
-
-    cursor: pointer;
+    height: 36px;
 
     display: flex;
 
     align-items: center;
 
     justify-content: center;
+
+    border-radius: 6px;
+
+    color: #ffffff;
+
+    font-size: 28px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    user-select: none;
 }
 
 .close-button:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background:
+        rgba(255, 255, 255, 0.12);
 }
 
 
@@ -450,6 +524,7 @@ body {
     flex: 1 1 auto;
 
     width: 100%;
+
     height: 100%;
 
     min-height: 0;
@@ -461,169 +536,24 @@ body {
 
 
 /* =========================================================
-   OLD CHAT CLASSES
-========================================================= */
-
-.messages {
-    flex: 1;
-
-    padding: 18px;
-
-    overflow-y: auto;
-
-    background: #f6f8fb;
-}
-
-.message {
-    display: flex;
-
-    gap: 10px;
-
-    margin-bottom: 15px;
-
-    max-width: 90%;
-}
-
-.bot-message {
-    align-items: flex-start;
-}
-
-.user-message {
-    margin-left: auto;
-
-    flex-direction: row-reverse;
-}
-
-.message-avatar {
-    width: 34px;
-    height: 34px;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background: #e8edf4;
-
-    color: #173b67;
-
-    flex-shrink: 0;
-}
-
-.message-content {
-    padding: 11px 14px;
-
-    border-radius: 12px;
-
-    font-size: 14px;
-
-    line-height: 1.55;
-
-    background: #ffffff;
-
-    border: 1px solid #dfe4ea;
-
-    color: #222222;
-
-    box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.04);
-}
-
-.user-message .message-content {
-    background: #173b67;
-
-    color: #ffffff;
-
-    border: none;
-}
-
-
-/* =========================================================
-   CHAT INPUT
-========================================================= */
-
-.chat-input-area {
-    display: flex;
-
-    padding: 12px;
-
-    border-top: 1px solid #dde2e8;
-
-    background: #ffffff;
-
-    gap: 8px;
-}
-
-#question-input {
-    flex: 1;
-
-    border: 1px solid #cbd3dc;
-
-    border-radius: 9px;
-
-    padding: 12px;
-
-    outline: none;
-
-    font-size: 14px;
-
-    background: #ffffff;
-
-    color: #222222;
-}
-
-#question-input:focus {
-    border-color: #173b67;
-
-    box-shadow:
-        0 0 0 2px rgba(31, 79, 138, 0.10);
-}
-
-#send-button {
-    width: 45px;
-
-    border: none;
-
-    border-radius: 9px;
-
-    background: #173b67;
-
-    color: #ffffff;
-
-    font-size: 18px;
-
-    cursor: pointer;
-}
-
-#send-button:hover {
-    background: #1f4f8a;
-}
-
-#send-button:disabled {
-    opacity: 0.5;
-
-    cursor: not-allowed;
-}
-
-
-/* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 800px) {
 
     .top-bar {
-        padding: 7px 4%;
+        padding:
+            7px 4%;
     }
 
     .header {
-        padding: 15px 4%;
+        padding:
+            15px 4%;
     }
 
     .nav {
-        padding: 0 4%;
+        padding:
+            0 4%;
 
         overflow-x: auto;
     }
@@ -642,6 +572,7 @@ body {
 
     .chat-widget {
         left: 10px;
+
         right: 10px;
 
         bottom: 85px;
@@ -650,7 +581,8 @@ body {
 
         max-width: none;
 
-        height: calc(100vh - 110px);
+        height:
+            calc(100vh - 110px);
 
         max-height: none;
 
@@ -659,6 +591,8 @@ body {
 
     .chat-button {
         right: 18px;
+
         bottom: 18px;
     }
+
 }

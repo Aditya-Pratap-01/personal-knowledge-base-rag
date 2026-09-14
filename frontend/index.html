@@ -22,26 +22,18 @@
         href="style.css"
     >
 
-    <!-- Extra widget control CSS -->
     <style>
 
-        /* Hide checkbox */
+        /* =================================================
+           CHAT TOGGLE
+        ================================================= */
+
         #chat-toggle {
             display: none;
         }
 
-        /* Open widget when checkbox is checked */
         #chat-toggle:checked ~ .chat-widget {
             display: flex;
-        }
-
-        /* Mobile widget */
-        @media (max-width: 800px) {
-
-            #chat-toggle:checked ~ .chat-widget {
-                display: flex;
-            }
-
         }
 
     </style>
@@ -52,13 +44,13 @@
 <body>
 
 
-    <!-- =====================================================
+    <!-- =================================================
          TOP BAR
-    ====================================================== -->
+    ================================================= -->
 
     <div class="top-bar">
 
-        <div>
+        <div class="top-bar-left">
             Digital Knowledge Portal
         </div>
 
@@ -69,7 +61,9 @@
             </span>
 
             <span>A-</span>
+
             <span>A</span>
+
             <span>A+</span>
 
         </div>
@@ -77,9 +71,9 @@
     </div>
 
 
-    <!-- =====================================================
+    <!-- =================================================
          HEADER
-    ====================================================== -->
+    ================================================= -->
 
     <header class="header">
 
@@ -96,7 +90,7 @@
                 </h1>
 
                 <p>
-                    Digital Knowledge & Information Assistant
+                    Digital Knowledge &amp; Information Assistant
                 </p>
 
             </div>
@@ -106,13 +100,15 @@
     </header>
 
 
-    <!-- =====================================================
+    <!-- =================================================
          NAVIGATION
-    ====================================================== -->
+    ================================================= -->
 
     <nav class="nav">
 
-        <a href="#">Home</a>
+        <a href="#">
+            Home
+        </a>
 
         <a href="#about">
             About Portal
@@ -133,9 +129,9 @@
     </nav>
 
 
-    <!-- =====================================================
+    <!-- =================================================
          MAIN CONTENT
-    ====================================================== -->
+    ================================================= -->
 
     <main
         id="main-content"
@@ -249,7 +245,7 @@
         </h2>
 
 
-        <section class="hero">
+        <section class="hero about-section">
 
             <div class="hero-text">
 
@@ -268,9 +264,9 @@
     </main>
 
 
-    <!-- =====================================================
+    <!-- =================================================
          FOOTER
-    ====================================================== -->
+    ================================================= -->
 
     <footer
         id="footer"
@@ -292,9 +288,9 @@
     </footer>
 
 
-    <!-- =====================================================
-         CHAT CONTROL
-    ====================================================== -->
+    <!-- =================================================
+         CHAT TOGGLE
+    ================================================= -->
 
     <input
         type="checkbox"
@@ -302,28 +298,29 @@
     >
 
 
-    <!-- =====================================================
+    <!-- =================================================
          CHAT WINDOW
-    ====================================================== -->
+    ================================================= -->
 
     <div class="chat-widget">
 
+        <!-- OUTER WIDGET HEADER -->
+
         <div class="chat-header">
 
-            <div>
+            <div class="chat-header-content">
 
                 <div class="chat-title">
                     💬 Personal Knowledge Assistant
                 </div>
 
                 <div class="chat-status">
-                    ● Online
+                    <span class="status-dot"></span>
+                    Online
                 </div>
 
             </div>
 
-
-            <!-- CLOSE BUTTON -->
 
             <label
                 for="chat-toggle"
@@ -336,22 +333,21 @@
         </div>
 
 
-        <!-- STREAMLIT CHAT -->
+        <!-- LIVE STREAMLIT CHAT -->
 
         <iframe
             class="chat-frame"
             src="https://personal-knowledge-base-widget.streamlit.app/?embed=true"
             title="Personal Knowledge Base Assistant"
             loading="lazy"
-        >
-        </iframe>
+        ></iframe>
 
     </div>
 
 
-    <!-- =====================================================
-         FLOATING CHAT BUTTON
-    ====================================================== -->
+    <!-- =================================================
+         FLOATING BUTTON
+    ================================================= -->
 
     <label
         for="chat-toggle"

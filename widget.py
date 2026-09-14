@@ -23,14 +23,19 @@ st.set_page_config(
 
 
 # =========================================================
-# LIGHT THEME + CUSTOM CSS
+# LIGHT THEME + CHAT UI
 # =========================================================
 
 st.html(
     """
     <style>
 
-    html, body {
+    /* =====================================================
+       PAGE
+    ===================================================== */
+
+    html,
+    body {
         background: #f7f8ff !important;
     }
 
@@ -46,9 +51,18 @@ st.html(
         background: #f7f8ff !important;
     }
 
+    [data-testid="stHeader"] {
+        background: transparent !important;
+    }
+
     [data-testid="stBottom"] {
         background: #ffffff !important;
     }
+
+
+    /* =====================================================
+       HIDE STREAMLIT DEFAULT UI
+    ===================================================== */
 
     header {
         visibility: hidden !important;
@@ -62,11 +76,16 @@ st.html(
         visibility: hidden !important;
     }
 
+
+    /* =====================================================
+       MAIN CONTAINER
+    ===================================================== */
+
     .block-container {
         max-width: 700px !important;
 
-        padding-top: 0.4rem !important;
-        padding-bottom: 0.4rem !important;
+        padding-top: 0.2rem !important;
+        padding-bottom: 0.3rem !important;
 
         padding-left: 0.5rem !important;
         padding-right: 0.5rem !important;
@@ -74,114 +93,50 @@ st.html(
 
 
     /* =====================================================
-       HEADER
-    ===================================================== */
-
-    .assistant-header {
-        width: 100%;
-
-        padding: 16px 18px;
-
-        border-radius: 16px 16px 0 0;
-
-        background:
-            linear-gradient(
-                135deg,
-                #173b67,
-                #244e85
-            );
-
-        color: white;
-
-        box-shadow:
-            0 4px 18px
-            rgba(23, 59, 103, 0.16);
-    }
-
-    .assistant-row {
-        display: flex;
-
-        align-items: center;
-
-        gap: 10px;
-    }
-
-    .assistant-icon {
-        width: 38px;
-        height: 38px;
-
-        border-radius: 50%;
-
-        background: #fff3f8;
-
-        display: flex;
-
-        align-items: center;
-        justify-content: center;
-
-        font-size: 21px;
-    }
-
-    .assistant-title {
-        font-size: 20px;
-        font-weight: 700;
-    }
-
-    .assistant-status {
-        margin-top: 5px;
-        margin-left: 48px;
-
-        font-size: 13px;
-        font-weight: 600;
-
-        color: #d6f8df;
-    }
-
-    .online-dot {
-        display: inline-block;
-
-        width: 8px;
-        height: 8px;
-
-        border-radius: 50%;
-
-        background: #4ade80;
-
-        margin-right: 5px;
-    }
-
-
-    /* =====================================================
-       WELCOME
+       WELCOME CARD
     ===================================================== */
 
     .welcome-card {
-        margin: 14px 6px 10px;
+        margin: 8px 5px 14px;
 
-        padding: 15px;
+        padding: 16px;
 
-        background: white;
+        background: #ffffff;
 
-        border:
-            1px solid
-            #e2e7f0;
+        border: 1px solid #e2e7f0;
 
         border-radius: 15px;
 
         color: #18233d;
 
-        font-size: 14px;
+        font-size: 15px;
 
-        line-height: 1.55;
+        line-height: 1.6;
 
         box-shadow:
-            0 2px 10px
+            0 3px 12px
             rgba(15, 23, 42, 0.05);
+    }
+
+    .welcome-title {
+        font-size: 18px;
+
+        font-weight: 700;
+
+        color: #173b67;
+
+        margin-bottom: 8px;
+    }
+
+    .welcome-text {
+        color: #4b5563;
+
+        font-size: 14px;
     }
 
 
     /* =====================================================
-       STREAMLIT CHAT MESSAGES
+       CHAT MESSAGES
     ===================================================== */
 
     [data-testid="stChatMessage"] {
@@ -190,7 +145,7 @@ st.html(
         padding:
             4px
             4px
-            8px
+            7px
             4px;
     }
 
@@ -201,25 +156,27 @@ st.html(
             11px
             14px !important;
 
-        background:
-            #eef1f7 !important;
+        background: #eef1f7 !important;
 
         border:
             1px solid
             #dfe4ed !important;
 
-        color:
-            #18233d !important;
+        color: #18233d !important;
 
-        font-size:
-            14px !important;
+        font-size: 14px !important;
 
-        line-height:
-            1.55 !important;
+        line-height: 1.55 !important;
+
+        box-shadow:
+            0 2px 8px
+            rgba(15, 23, 42, 0.04);
     }
 
 
-    /* USER MESSAGE */
+    /* =====================================================
+       USER MESSAGE
+    ===================================================== */
 
     [data-testid="stChatMessage"]:has(
         [data-testid="chatAvatarIcon-user"]
@@ -235,7 +192,11 @@ st.html(
 
         border: none !important;
 
-        color: white !important;
+        color: #ffffff !important;
+
+        box-shadow:
+            0 4px 12px
+            rgba(30, 58, 138, 0.14);
     }
 
     [data-testid="stChatMessage"]:has(
@@ -243,7 +204,7 @@ st.html(
     )
     [data-testid="stChatMessageContent"] p {
 
-        color: white !important;
+        color: #ffffff !important;
     }
 
 
@@ -252,7 +213,7 @@ st.html(
     ===================================================== */
 
     [data-testid="stChatInput"] {
-        background: white !important;
+        background: #ffffff !important;
 
         padding-top: 8px !important;
 
@@ -262,7 +223,8 @@ st.html(
     }
 
     [data-testid="stChatInput"] > div {
-        background: white !important;
+
+        background: #ffffff !important;
 
         border:
             1px solid
@@ -277,7 +239,8 @@ st.html(
     }
 
     [data-testid="stChatInput"] textarea {
-        background: white !important;
+
+        background: #ffffff !important;
 
         color: #18233d !important;
 
@@ -285,7 +248,27 @@ st.html(
     }
 
     [data-testid="stChatInput"] textarea::placeholder {
+
         color: #7b8497 !important;
+    }
+
+
+    /* =====================================================
+       SCROLLBAR
+    ===================================================== */
+
+    ::-webkit-scrollbar {
+        width: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #c5ccda;
+
+        border-radius: 10px;
     }
 
 
@@ -295,12 +278,13 @@ st.html(
 
     @media (max-width: 600px) {
 
-        .assistant-title {
-            font-size: 18px;
+        [data-testid="stChatMessageContent"] {
+            font-size: 14px !important;
         }
 
-        .assistant-status {
-            margin-left: 47px;
+        .welcome-card {
+            margin-left: 2px;
+            margin-right: 2px;
         }
 
     }
@@ -318,17 +302,26 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
+# Streamlit Cloud Secrets fallback
 if not GROQ_API_KEY:
+
     try:
-        GROQ_API_KEY = st.secrets.get("GROQ_API_KEY")
+        GROQ_API_KEY = st.secrets.get(
+            "GROQ_API_KEY"
+        )
+
     except Exception:
         GROQ_API_KEY = None
 
+
 if not GROQ_API_KEY:
+
     st.error(
         "GROQ_API_KEY is not configured."
     )
+
     st.stop()
+
 
 client = Groq(
     api_key=GROQ_API_KEY
@@ -346,6 +339,7 @@ if "widget_notes_indexed" not in st.session_state:
     ):
 
         try:
+
             ingest_local_notes()
 
             st.session_state.widget_notes_indexed = True
@@ -360,40 +354,7 @@ if "widget_notes_indexed" not in st.session_state:
 
 
 # =========================================================
-# HEADER
-# =========================================================
-
-st.html(
-    """
-    <div class="assistant-header">
-
-        <div class="assistant-row">
-
-            <div class="assistant-icon">
-                🧠
-            </div>
-
-            <div class="assistant-title">
-                Knowledge Assistant
-            </div>
-
-        </div>
-
-        <div class="assistant-status">
-
-            <span class="online-dot"></span>
-
-            Online
-
-        </div>
-
-    </div>
-    """
-)
-
-
-# =========================================================
-# WELCOME
+# WELCOME MESSAGE
 # =========================================================
 
 if "welcome_shown" not in st.session_state:
@@ -402,14 +363,14 @@ if "welcome_shown" not in st.session_state:
         """
         <div class="welcome-card">
 
-            <strong>
+            <div class="welcome-title">
                 Hi! 👋
-            </strong>
+            </div>
 
-            <br><br>
-
-            Ask me anything about your uploaded
-            knowledge base.
+            <div class="welcome-text">
+                Ask me anything about your uploaded
+                knowledge base.
+            </div>
 
         </div>
         """
@@ -439,7 +400,7 @@ for message in st.session_state.messages:
 
 
 # =========================================================
-# HELPERS
+# GREETING DETECTION
 # =========================================================
 
 def is_greeting(text):
@@ -462,6 +423,10 @@ def is_greeting(text):
         in greetings
     )
 
+
+# =========================================================
+# THANKS DETECTION
+# =========================================================
 
 def is_thanks(text):
 
@@ -495,9 +460,9 @@ if question:
     question = question.strip()
 
 
-    # -----------------------------------------------------
-    # STORE USER MESSAGE
-    # -----------------------------------------------------
+    # =====================================================
+    # SAVE USER MESSAGE
+    # =====================================================
 
     st.session_state.messages.append(
         {
@@ -507,9 +472,9 @@ if question:
     )
 
 
-    # -----------------------------------------------------
+    # =====================================================
     # DISPLAY USER MESSAGE
-    # -----------------------------------------------------
+    # =====================================================
 
     with st.chat_message(
         "user"
@@ -547,7 +512,7 @@ if question:
 
 
     # =====================================================
-    # RAG
+    # RAG SEARCH
     # =====================================================
 
     else:
@@ -579,6 +544,10 @@ if question:
             )
 
 
+            # =============================================
+            # GROQ PROMPT
+            # =============================================
+
             prompt = f"""
 You are a helpful Personal Knowledge Base Assistant.
 
@@ -602,28 +571,33 @@ User question:
 
             try:
 
-                response = client.chat.completions.create(
+                response = (
+                    client
+                    .chat
+                    .completions
+                    .create(
+                        model="openai/gpt-oss-120b",
 
-                    model="openai/gpt-oss-120b",
+                        messages=[
+                            {
+                                "role": "system",
 
-                    messages=[
-                        {
-                            "role": "system",
+                                "content": (
+                                    "Answer questions only "
+                                    "from the provided "
+                                    "knowledge base context."
+                                ),
+                            },
 
-                            "content": (
-                                "Answer questions only "
-                                "from the provided "
-                                "knowledge base context."
-                            ),
-                        },
-                        {
-                            "role": "user",
+                            {
+                                "role": "user",
 
-                            "content": prompt,
-                        },
-                    ],
+                                "content": prompt,
+                            },
+                        ],
 
-                    temperature=0.2,
+                        temperature=0.2,
+                    )
                 )
 
 
@@ -636,7 +610,7 @@ User question:
                 )
 
 
-            except Exception as e:
+            except Exception:
 
                 answer = (
                     "Sorry, I couldn't process "
@@ -658,7 +632,7 @@ User question:
 
 
     # =====================================================
-    # STORE ASSISTANT
+    # SAVE ASSISTANT
     # =====================================================
 
     st.session_state.messages.append(
