@@ -1156,7 +1156,7 @@ User question:
                     .content
                     .strip()
                 )
-
+                answer = answer.replace("**", "")
 
             except Exception:
 
