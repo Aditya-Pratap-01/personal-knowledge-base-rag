@@ -1,4 +1,5 @@
 import os
+import html
 
 import streamlit as st
 from dotenv import load_dotenv
@@ -23,7 +24,7 @@ st.set_page_config(
 
 
 # =========================================================
-# LIGHT THEME + CHAT UI
+# CUSTOM UI
 # =========================================================
 
 st.html(
@@ -31,41 +32,53 @@ st.html(
     <style>
 
     /* =====================================================
-       PAGE
+       GLOBAL PAGE
     ===================================================== */
 
     html,
     body {
-        background: #f7f8ff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background: #f4f6fb !important;
     }
 
     [data-testid="stAppViewContainer"] {
-        background: #f7f8ff !important;
+        background: #f4f6fb !important;
     }
 
     [data-testid="stMain"] {
-        background: #f7f8ff !important;
+        background: #f4f6fb !important;
     }
 
     [data-testid="stMainBlockContainer"] {
-        background: #f7f8ff !important;
+        background: #f4f6fb !important;
+
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+
+        padding-left: 12px !important;
+        padding-right: 12px !important;
     }
 
-    [data-testid="stHeader"] {
-        background: transparent !important;
-    }
+    .block-container {
+        max-width: 100% !important;
 
-    [data-testid="stBottom"] {
-        background: #ffffff !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
 
 
     /* =====================================================
-       HIDE STREAMLIT DEFAULT UI
+       HIDE STREAMLIT DEFAULT ELEMENTS
     ===================================================== */
 
     header {
         visibility: hidden !important;
+        height: 0 !important;
     }
 
     #MainMenu {
@@ -74,48 +87,30 @@ st.html(
 
     footer {
         visibility: hidden !important;
+        height: 0 !important;
     }
 
 
     /* =====================================================
-       MAIN CONTAINER
-    ===================================================== */
-
-    .block-container {
-        max-width: 700px !important;
-
-        padding-top: 0.2rem !important;
-        padding-bottom: 0.3rem !important;
-
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-    }
-
-
-    /* =====================================================
-       WELCOME CARD
+       WELCOME MESSAGE
     ===================================================== */
 
     .welcome-card {
-        margin: 8px 5px 14px;
-
-        padding: 16px;
-
         background: #ffffff;
 
-        border: 1px solid #e2e7f0;
+        border: 1px solid #dde3ee;
 
-        border-radius: 15px;
+        border-radius: 18px;
 
-        color: #18233d;
+        padding: 18px 18px;
 
-        font-size: 15px;
+        margin: 4px 4px 16px 4px;
 
-        line-height: 1.6;
+        color: #19233b;
 
         box-shadow:
-            0 3px 12px
-            rgba(15, 23, 42, 0.05);
+            0 4px 14px
+            rgba(20, 35, 60, 0.05);
     }
 
     .welcome-title {
@@ -123,106 +118,218 @@ st.html(
 
         font-weight: 700;
 
-        color: #173b67;
+        color: #18233d;
 
-        margin-bottom: 8px;
+        margin-bottom: 9px;
     }
 
     .welcome-text {
-        color: #4b5563;
-
         font-size: 14px;
+
+        color: #5e687b;
+
+        line-height: 1.6;
     }
 
 
     /* =====================================================
-       CHAT MESSAGES
+       CHAT AREA
     ===================================================== */
 
-    [data-testid="stChatMessage"] {
-        background: transparent !important;
+    .chat-area {
+        display: flex;
 
-        padding:
-            4px
-            4px
-            7px
-            4px;
+        flex-direction: column;
+
+        gap: 14px;
+
+        padding: 0 4px 10px 4px;
     }
 
-    [data-testid="stChatMessageContent"] {
-        border-radius: 15px !important;
 
-        padding:
-            11px
-            14px !important;
+    /* =====================================================
+       MESSAGE ROW
+    ===================================================== */
 
-        background: #eef1f7 !important;
+    .message-row {
+        width: 100%;
+
+        display: flex;
+
+        align-items: flex-end;
+
+        gap: 9px;
+    }
+
+    .message-row.assistant {
+        justify-content: flex-start;
+    }
+
+    .message-row.user {
+        justify-content: flex-end;
+    }
+
+
+    /* =====================================================
+       AVATAR
+    ===================================================== */
+
+    .avatar {
+        width: 36px;
+        height: 36px;
+
+        min-width: 36px;
+
+        border-radius: 11px;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+
+        font-size: 19px;
+    }
+
+    .assistant-avatar {
+        background: #fff3f7;
+        color: #173b67;
+
+        border: 1px solid #f1dce5;
+    }
+
+    .user-avatar {
+        background: #ffffff;
+
+        border: 1px solid #d9dfeb;
+
+        font-size: 17px;
+    }
+
+
+    /* =====================================================
+       MESSAGE BUBBLE
+    ===================================================== */
+
+    .message-bubble {
+        max-width: 78%;
+
+        padding: 13px 15px;
+
+        border-radius: 17px;
+
+        font-size: 14px;
+
+        line-height: 1.58;
+
+        word-break: break-word;
+
+        white-space: normal;
+    }
+
+    .assistant-bubble {
+        background: #ffffff;
+
+        color: #1c2942;
 
         border:
             1px solid
-            #dfe4ed !important;
+            #dde3ee;
 
-        color: #18233d !important;
-
-        font-size: 14px !important;
-
-        line-height: 1.55 !important;
+        border-top-left-radius: 7px;
 
         box-shadow:
-            0 2px 8px
-            rgba(15, 23, 42, 0.04);
+            0 3px 10px
+            rgba(20, 35, 60, 0.05);
     }
 
-
-    /* =====================================================
-       USER MESSAGE
-    ===================================================== */
-
-    [data-testid="stChatMessage"]:has(
-        [data-testid="chatAvatarIcon-user"]
-    )
-    [data-testid="stChatMessageContent"] {
-
+    .user-bubble {
         background:
             linear-gradient(
                 135deg,
                 #173b67,
                 #244e85
-            ) !important;
+            );
 
-        border: none !important;
+        color: #ffffff;
 
-        color: #ffffff !important;
+        border-top-right-radius: 7px;
 
         box-shadow:
             0 4px 12px
-            rgba(30, 58, 138, 0.14);
-    }
-
-    [data-testid="stChatMessage"]:has(
-        [data-testid="chatAvatarIcon-user"]
-    )
-    [data-testid="stChatMessageContent"] p {
-
-        color: #ffffff !important;
+            rgba(23, 59, 103, 0.16);
     }
 
 
     /* =====================================================
-       CHAT INPUT
+       INPUT AREA
     ===================================================== */
 
-    [data-testid="stChatInput"] {
-        background: #ffffff !important;
+    .input-heading {
+        font-size: 12px;
 
-        padding-top: 8px !important;
+        color: #788298;
 
-        border-top:
-            1px solid
-            #e1e5ec !important;
+        margin:
+            8px
+            4px
+            6px
+            4px;
     }
 
-    [data-testid="stChatInput"] > div {
+
+    /* =====================================================
+       STREAMLIT FORM
+    ===================================================== */
+
+    div[data-testid="stForm"] {
+
+        background: #ffffff !important;
+
+        border:
+            1px solid
+            #d7deea !important;
+
+        border-radius:
+            16px !important;
+
+        padding:
+            8px !important;
+
+        box-shadow:
+            0 4px 15px
+            rgba(20, 35, 60, 0.06) !important;
+    }
+
+    div[data-testid="stForm"] > div {
+
+        background: transparent !important;
+    }
+
+
+    /* =====================================================
+       TEXT INPUT
+    ===================================================== */
+
+    div[data-testid="stTextInput"] {
+
+        margin-bottom: 0 !important;
+    }
+
+    div[data-testid="stTextInput"] label {
+
+        display: none !important;
+    }
+
+    div[data-testid="stTextInput"] > div {
+
+        background: #ffffff !important;
+
+        border: none !important;
+
+        box-shadow: none !important;
+    }
+
+    div[data-testid="stTextInput"] input {
 
         background: #ffffff !important;
 
@@ -233,42 +340,73 @@ st.html(
         border-radius:
             13px !important;
 
-        box-shadow:
-            0 4px 14px
-            rgba(15, 23, 42, 0.06) !important;
-    }
-
-    [data-testid="stChatInput"] textarea {
-
-        background: #ffffff !important;
-
-        color: #18233d !important;
+        color: #1b2740 !important;
 
         font-size: 14px !important;
+
+        padding:
+            12px
+            14px !important;
+
+        min-height: 44px !important;
+
+        box-shadow: none !important;
     }
 
-    [data-testid="stChatInput"] textarea::placeholder {
+    div[data-testid="stTextInput"] input:focus {
 
-        color: #7b8497 !important;
+        border-color:
+            #315d91 !important;
+
+        box-shadow:
+            0 0 0 2px
+            rgba(49, 93, 145, 0.10) !important;
+    }
+
+    div[data-testid="stTextInput"] input::placeholder {
+
+        color: #8a93a5 !important;
     }
 
 
     /* =====================================================
-       SCROLLBAR
+       BUTTONS
     ===================================================== */
 
-    ::-webkit-scrollbar {
-        width: 7px;
+    div[data-testid="stFormSubmitButton"] button {
+
+        height: 44px !important;
+
+        min-width: 48px !important;
+
+        border: none !important;
+
+        border-radius: 13px !important;
+
+        background:
+            linear-gradient(
+                135deg,
+                #173b67,
+                #244e85
+            ) !important;
+
+        color: #ffffff !important;
+
+        font-size: 18px !important;
+
+        font-weight: 600 !important;
+
+        box-shadow: none !important;
     }
 
-    ::-webkit-scrollbar-track {
-        background: transparent;
-    }
+    div[data-testid="stFormSubmitButton"] button:hover {
 
-    ::-webkit-scrollbar-thumb {
-        background: #c5ccda;
-
-        border-radius: 10px;
+        background:
+            linear-gradient(
+                135deg,
+                #244e85,
+                #315d91
+            ) !important;
     }
 
 
@@ -278,8 +416,15 @@ st.html(
 
     @media (max-width: 600px) {
 
-        [data-testid="stChatMessageContent"] {
-            font-size: 14px !important;
+        .message-bubble {
+            max-width: 82%;
+        }
+
+        .avatar {
+            width: 33px;
+            height: 33px;
+
+            min-width: 33px;
         }
 
         .welcome-card {
@@ -300,17 +445,21 @@ st.html(
 
 load_dotenv()
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_API_KEY = os.getenv(
+    "GROQ_API_KEY"
+)
 
-# Streamlit Cloud Secrets fallback
+
 if not GROQ_API_KEY:
 
     try:
+
         GROQ_API_KEY = st.secrets.get(
             "GROQ_API_KEY"
         )
 
     except Exception:
+
         GROQ_API_KEY = None
 
 
@@ -354,7 +503,16 @@ if "widget_notes_indexed" not in st.session_state:
 
 
 # =========================================================
-# WELCOME MESSAGE
+# SESSION STATE
+# =========================================================
+
+if "messages" not in st.session_state:
+
+    st.session_state.messages = []
+
+
+# =========================================================
+# WELCOME
 # =========================================================
 
 if "welcome_shown" not in st.session_state:
@@ -380,32 +538,78 @@ if "welcome_shown" not in st.session_state:
 
 
 # =========================================================
-# CHAT HISTORY
+# MESSAGE RENDERER
 # =========================================================
 
-if "messages" not in st.session_state:
+def render_message(
+    role,
+    content,
+):
 
-    st.session_state.messages = []
+    safe_content = html.escape(
+        content
+    ).replace(
+        "\n",
+        "<br>"
+    )
 
+    if role == "user":
 
-for message in st.session_state.messages:
+        st.html(
+            f"""
+            <div class="message-row user">
 
-    with st.chat_message(
-        message["role"]
-    ):
+                <div class="message-bubble user-bubble">
+                    {safe_content}
+                </div>
 
-        st.markdown(
-            message["content"]
+                <div class="avatar user-avatar">
+                    👤
+                </div>
+
+            </div>
+            """
+        )
+
+    else:
+
+        st.html(
+            f"""
+            <div class="message-row assistant">
+
+                <div class="avatar assistant-avatar">
+                    🧠
+                </div>
+
+                <div class="message-bubble assistant-bubble">
+                    {safe_content}
+                </div>
+
+            </div>
+            """
         )
 
 
 # =========================================================
-# GREETING DETECTION
+# CHAT HISTORY
+# =========================================================
+
+for message in st.session_state.messages:
+
+    render_message(
+        message["role"],
+        message["content"],
+    )
+
+
+# =========================================================
+# GREETING
 # =========================================================
 
 def is_greeting(text):
 
     greetings = {
+
         "hi",
         "hii",
         "hiii",
@@ -413,9 +617,11 @@ def is_greeting(text):
         "hey",
         "hey bhai",
         "namaste",
+
         "good morning",
         "good afternoon",
         "good evening",
+
     }
 
     return (
@@ -425,19 +631,22 @@ def is_greeting(text):
 
 
 # =========================================================
-# THANKS DETECTION
+# THANKS
 # =========================================================
 
 def is_thanks(text):
 
     thanks_words = {
+
         "thanks",
         "thank you",
         "thankyou",
         "thx",
         "ty",
+
         "thanks bhai",
         "thank you bhai",
+
     }
 
     return (
@@ -447,15 +656,60 @@ def is_thanks(text):
 
 
 # =========================================================
-# CHAT INPUT
+# INPUT LABEL
 # =========================================================
 
-question = st.chat_input(
-    "Ask something..."
+st.html(
+    """
+    <div class="input-heading">
+        Ask something about your notes
+    </div>
+    """
 )
 
 
-if question:
+# =========================================================
+# CUSTOM INPUT FORM
+# =========================================================
+
+with st.form(
+    "knowledge_chat_form",
+    clear_on_submit=True,
+):
+
+    col1, col2, col3 = st.columns(
+        [0.08, 0.82, 0.10],
+        vertical_alignment="center",
+    )
+
+
+    with col1:
+
+        st.write("🎙️")
+
+
+    with col2:
+
+        question = st.text_input(
+            "Question",
+            placeholder="Ask something...",
+            label_visibility="collapsed",
+        )
+
+
+    with col3:
+
+        submitted = st.form_submit_button(
+            "➤",
+            use_container_width=True,
+        )
+
+
+# =========================================================
+# PROCESS QUESTION
+# =========================================================
+
+if submitted and question.strip():
 
     question = question.strip()
 
@@ -470,19 +724,6 @@ if question:
             "content": question,
         }
     )
-
-
-    # =====================================================
-    # DISPLAY USER MESSAGE
-    # =====================================================
-
-    with st.chat_message(
-        "user"
-    ):
-
-        st.markdown(
-            question
-        )
 
 
     # =====================================================
@@ -544,10 +785,6 @@ if question:
             )
 
 
-            # =============================================
-            # GROQ PROMPT
-            # =============================================
-
             prompt = f"""
 You are a helpful Personal Knowledge Base Assistant.
 
@@ -588,7 +825,6 @@ User question:
                                     "knowledge base context."
                                 ),
                             },
-
                             {
                                 "role": "user",
 
@@ -619,20 +855,7 @@ User question:
 
 
     # =====================================================
-    # DISPLAY ASSISTANT
-    # =====================================================
-
-    with st.chat_message(
-        "assistant"
-    ):
-
-        st.markdown(
-            answer
-        )
-
-
-    # =====================================================
-    # SAVE ASSISTANT
+    # SAVE ASSISTANT MESSAGE
     # =====================================================
 
     st.session_state.messages.append(
@@ -641,3 +864,10 @@ User question:
             "content": answer,
         }
     )
+
+
+    # =====================================================
+    # RERUN FOR CLEAN DISPLAY
+    # =====================================================
+
+    st.rerun()
