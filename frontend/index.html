@@ -1,82 +1,367 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Personal Knowledge Assistant</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <meta
+        name="description"
+        content="Personal Knowledge Base digital information portal"
+    >
+
+    <title>Personal Knowledge Base Portal</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <!-- Extra widget control CSS -->
+    <style>
+
+        /* Hide checkbox */
+        #chat-toggle {
+            display: none;
+        }
+
+        /* Open widget when checkbox is checked */
+        #chat-toggle:checked ~ .chat-widget {
+            display: flex;
+        }
+
+        /* Mobile widget */
+        @media (max-width: 800px) {
+
+            #chat-toggle:checked ~ .chat-widget {
+                display: flex;
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-    <!-- Chatbot floating button -->
-    <button id="chat-button" class="chat-button">
-        💬
-    </button>
 
+    <!-- =====================================================
+         TOP BAR
+    ====================================================== -->
 
-    <!-- Chatbot window -->
-    <div id="chat-widget" class="chat-widget">
+    <div class="top-bar">
 
-        <!-- Header -->
-        <div class="chat-header">
-
-            <div>
-                <div class="chat-title">
-                    🧠 Knowledge Assistant
-                </div>
-
-                <div class="chat-status">
-                    ● Online
-                </div>
-            </div>
-
-            <button id="close-chat" class="close-button">
-                ×
-            </button>
-
+        <div>
+            Digital Knowledge Portal
         </div>
 
+        <div class="top-links">
 
-        <!-- Messages -->
-        <div id="messages" class="messages">
+            <span>
+                Skip to Main Content
+            </span>
 
-            <div class="message bot-message">
-                <div class="message-avatar">
-                    🧠
-                </div>
-
-                <div class="message-content">
-                    Hi! 👋<br><br>
-                    Ask me anything about your uploaded knowledge base.
-                </div>
-            </div>
-
-        </div>
-
-
-        <!-- Input -->
-        <div class="chat-input-area">
-
-            <input
-                id="question-input"
-                type="text"
-                placeholder="Ask something..."
-                autocomplete="off"
-            >
-
-            <button id="send-button">
-                ➤
-            </button>
+            <span>A-</span>
+            <span>A</span>
+            <span>A+</span>
 
         </div>
 
     </div>
 
 
-    <script src="script.js"></script>
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="header">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                📚
+            </div>
+
+            <div>
+
+                <h1>
+                    Personal Knowledge Base Portal
+                </h1>
+
+                <p>
+                    Digital Knowledge & Information Assistant
+                </p>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         NAVIGATION
+    ====================================================== -->
+
+    <nav class="nav">
+
+        <a href="#">Home</a>
+
+        <a href="#about">
+            About Portal
+        </a>
+
+        <a href="#services">
+            Knowledge Base
+        </a>
+
+        <a href="#services">
+            Services
+        </a>
+
+        <a href="#footer">
+            Contact Us
+        </a>
+
+    </nav>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main
+        id="main-content"
+        class="container"
+    >
+
+        <div class="notice">
+
+            <strong>
+                Information:
+            </strong>
+
+            This portal provides answers based only on the
+            documents available in the Personal Knowledge Base.
+
+        </div>
+
+
+        <!-- HERO -->
+
+        <section class="hero">
+
+            <div class="hero-text">
+
+                <h2>
+                    Welcome to the Personal Knowledge Base
+                </h2>
+
+                <p>
+                    Search your personal knowledge collection
+                    using a simple AI-powered information
+                    assistant. Ask questions in natural language
+                    and receive answers grounded in your notes.
+                </p>
+
+                <a
+                    href="#services"
+                    class="hero-button"
+                >
+                    Explore Services
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- SERVICES -->
+
+        <h2
+            id="services"
+            class="section-title"
+        >
+            Portal Services
+        </h2>
+
+
+        <section class="cards">
+
+            <div class="card">
+
+                <h3>
+                    📚 Knowledge Search
+                </h3>
+
+                <p>
+                    Search and retrieve relevant information
+                    from your personal knowledge documents.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    🤖 AI Assistant
+                </h3>
+
+                <p>
+                    Ask natural-language questions and receive
+                    concise answers based on your knowledge base.
+                </p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    🔎 Source-Based Answers
+                </h3>
+
+                <p>
+                    Responses are grounded in the available
+                    documents rather than generated from guesses.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ABOUT -->
+
+        <h2
+            id="about"
+            class="section-title"
+        >
+            About the Portal
+        </h2>
+
+
+        <section class="hero">
+
+            <div class="hero-text">
+
+                <p>
+                    The Personal Knowledge Base is designed to
+                    make information stored in notes easier to
+                    find and understand. The assistant uses
+                    retrieval-based search before generating
+                    an answer.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer
+        id="footer"
+        class="footer"
+    >
+
+        <div>
+            © 2026 Personal Knowledge Base Portal
+        </div>
+
+        <div>
+            Privacy Policy
+            &nbsp; | &nbsp;
+            Accessibility
+            &nbsp; | &nbsp;
+            Contact
+        </div>
+
+    </footer>
+
+
+    <!-- =====================================================
+         CHAT CONTROL
+    ====================================================== -->
+
+    <input
+        type="checkbox"
+        id="chat-toggle"
+    >
+
+
+    <!-- =====================================================
+         CHAT WINDOW
+    ====================================================== -->
+
+    <div class="chat-widget">
+
+        <div class="chat-header">
+
+            <div>
+
+                <div class="chat-title">
+                    💬 Personal Knowledge Assistant
+                </div>
+
+                <div class="chat-status">
+                    ● Online
+                </div>
+
+            </div>
+
+
+            <!-- CLOSE BUTTON -->
+
+            <label
+                for="chat-toggle"
+                class="close-button"
+                aria-label="Close chatbot"
+            >
+                ×
+            </label>
+
+        </div>
+
+
+        <!-- STREAMLIT CHAT -->
+
+        <iframe
+            class="chat-frame"
+            src="http://localhost:8502/?embed=true"
+            title="Personal Knowledge Base Assistant"
+            loading="lazy"
+        >
+        </iframe>
+
+    </div>
+
+
+    <!-- =====================================================
+         FLOATING CHAT BUTTON
+    ====================================================== -->
+
+    <label
+        for="chat-toggle"
+        class="chat-button"
+        aria-label="Open Personal Knowledge Assistant"
+    >
+        💬
+    </label>
+
 
 </body>
+
 </html>
