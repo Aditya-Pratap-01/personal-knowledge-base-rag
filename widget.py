@@ -1029,7 +1029,7 @@ if submitted and question.strip():
     if is_greeting(question):
 
         answer = (
-            "Hi! 👋\n\n"
+            "Hi! 👋\n"
             "Ask me anything about your "
             "uploaded knowledge base."
         )
@@ -1038,7 +1038,7 @@ if submitted and question.strip():
     elif is_thanks(question):
 
         answer = (
-            "You're welcome! 😊\n\n"
+            "You're welcome! 😊\n"
             "Feel free to ask me anything "
             "about your knowledge base."
         )
@@ -1062,7 +1062,7 @@ if submitted and question.strip():
 
         else:
 
-            context = "\n\n".join(
+            context = "\n".join(
                 [
                     (
                         f"Source: {result['source']}\n"
