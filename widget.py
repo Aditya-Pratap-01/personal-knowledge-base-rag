@@ -427,23 +427,6 @@ st.html(
 
 
     /* =====================================================
-       INPUT HEADING
-    ===================================================== */
-
-    .input-heading {
-        font-size: 12px;
-
-        color: #788298;
-
-        margin:
-            8px
-            4px
-            6px
-            4px;
-    }
-
-
-    /* =====================================================
        INPUT FORM
     ===================================================== */
 
@@ -535,6 +518,10 @@ st.html(
     div[data-testid="stTextInput"] input::placeholder {
         color:
             #8a93a5 !important;
+    }
+
+    [data-testid="InputInstructions"] {
+        display: none !important;
     }
 
 
@@ -935,19 +922,6 @@ chat_placeholder.html(
             show_typing=False,
         )}
 
-    </div>
-    """
-)
-
-
-# =========================================================
-# INPUT HEADING
-# =========================================================
-
-st.html(
-    """
-    <div class="input-heading">
-        Ask something about your notes
     </div>
     """
 )
