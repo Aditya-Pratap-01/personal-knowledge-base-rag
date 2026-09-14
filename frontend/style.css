@@ -21,7 +21,6 @@ body {
         sans-serif;
 
     background: #f5f6f8;
-
     color: #222;
 }
 
@@ -32,27 +31,21 @@ body {
 
 .top-bar {
     background: #f1f1f1;
-
     border-bottom: 1px solid #d5d5d5;
 
     padding: 7px 7%;
 
     font-size: 13px;
-
     color: #555;
 
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
 }
 
 .top-links {
     display: flex;
-
     align-items: center;
-
     gap: 16px;
 }
 
@@ -73,17 +66,13 @@ body {
     border-bottom: 4px solid #1f4f8a;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 }
 
 .brand {
     display: flex;
-
     align-items: center;
-
     gap: 15px;
 }
 
@@ -92,11 +81,9 @@ body {
     height: 58px;
 
     border: 2px solid #777;
-
     border-radius: 50%;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
@@ -132,7 +119,6 @@ body {
     padding: 0 7%;
 
     display: flex;
-
     align-items: center;
 }
 
@@ -195,9 +181,7 @@ body {
     padding: 40px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     gap: 35px;
@@ -332,11 +316,9 @@ body {
     position: fixed;
 
     right: 25px;
-
     bottom: 25px;
 
     width: 62px;
-
     height: 62px;
 
     border: 1px solid #173b67;
@@ -384,7 +366,6 @@ body {
     position: fixed;
 
     right: 25px;
-
     bottom: 100px;
 
     width: 410px;
@@ -424,7 +405,8 @@ body {
 ========================================================= */
 
 .chat-header {
-    flex: 0 0 62px;
+    flex:
+        0 0 62px;
 
     min-height: 62px;
 
@@ -437,7 +419,9 @@ body {
 
     color: #ffffff;
 
-    padding: 10px 16px;
+    padding:
+        10px
+        16px;
 
     display: flex;
 
@@ -474,7 +458,6 @@ body {
 
 .status-dot {
     width: 7px;
-
     height: 7px;
 
     border-radius: 50%;
@@ -486,13 +469,11 @@ body {
 
 .close-button {
     width: 36px;
-
     height: 36px;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     border-radius: 6px;
@@ -521,17 +502,22 @@ body {
 .chat-frame {
     display: block;
 
-    flex: 1 1 auto;
+    flex:
+        1 1 0;
 
     width: 100%;
 
-    height: 100%;
+    height: 0;
 
     min-height: 0;
+
+    min-width: 0;
 
     border: none;
 
     background: #ffffff;
+
+    overflow: hidden;
 }
 
 
@@ -594,5 +580,4 @@ body {
 
         bottom: 18px;
     }
-
 }

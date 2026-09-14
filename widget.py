@@ -95,19 +95,43 @@ st.html(
 
     /* =====================================================
        STREAMLIT BOTTOM AREA
+       Keep the chat input visible above the bottom edge.
     ===================================================== */
 
     [data-testid="stBottom"] {
         background: #f4f6fb !important;
+
         border: none !important;
+
         box-shadow: none !important;
+
+        position: fixed !important;
+
+        bottom: 0 !important;
+
+        left: 0 !important;
+
+        right: 0 !important;
+
+        z-index: 99999 !important;
+
+        padding-bottom: 8px !important;
     }
 
     [data-testid="stBottomBlockContainer"] {
         background: #f4f6fb !important;
+
         border: none !important;
+
         box-shadow: none !important;
-        padding: 0 !important;
+
+        padding:
+            0
+            4px
+            0
+            4px !important;
+
+        max-width: 100% !important;
     }
 
 
@@ -117,7 +141,9 @@ st.html(
     ===================================================== */
 
     .chat-scroll {
-        height: 455px;
+        height: calc(100vh - 145px);
+
+        min-height: 0;
 
         overflow-y: auto;
         overflow-x: hidden;
@@ -449,6 +475,10 @@ st.html(
         box-shadow:
             0 4px 15px
             rgba(20, 35, 60, 0.06) !important;
+
+        position: relative !important;
+
+        z-index: 100000 !important;
     }
 
     div[data-testid="stForm"] > div {
@@ -608,7 +638,10 @@ st.html(
 
         .chat-scroll {
             height:
-                430px;
+                calc(100vh - 145px);
+
+            min-height:
+                0;
 
             flex-direction:
                 column-reverse;
@@ -1130,7 +1163,9 @@ User question:
                     .content
                     .strip()
                 )
+
                 answer = answer.replace("**", "")
+
 
             except Exception:
 
