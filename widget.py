@@ -95,55 +95,28 @@ st.html(
 
     /* =====================================================
        STREAMLIT BOTTOM AREA
-       Keep the chat input visible above the bottom edge.
     ===================================================== */
 
     [data-testid="stBottom"] {
         background: #f4f6fb !important;
-
         border: none !important;
-
         box-shadow: none !important;
-
-        position: fixed !important;
-
-        bottom: 0 !important;
-
-        left: 0 !important;
-
-        right: 0 !important;
-
-        z-index: 99999 !important;
-
-        padding-bottom: 8px !important;
     }
 
     [data-testid="stBottomBlockContainer"] {
         background: #f4f6fb !important;
-
         border: none !important;
-
         box-shadow: none !important;
-
-        padding:
-            0
-            4px
-            0
-            4px !important;
-
-        max-width: 100% !important;
+        padding: 0 !important;
     }
 
 
     /* =====================================================
        CHAT SCROLL AREA
-       column-reverse keeps newest message at bottom.
     ===================================================== */
 
     .chat-scroll {
-        height: calc(100vh - 145px);
-
-        min-height: 0;
+        height: 455px;
 
         overflow-y: auto;
         overflow-x: hidden;
@@ -475,10 +448,6 @@ st.html(
         box-shadow:
             0 4px 15px
             rgba(20, 35, 60, 0.06) !important;
-
-        position: relative !important;
-
-        z-index: 100000 !important;
     }
 
     div[data-testid="stForm"] > div {
@@ -488,11 +457,52 @@ st.html(
 
 
     /* =====================================================
+       INPUT + SEND BUTTON SAME LINE
+    ===================================================== */
+
+    div[data-testid="stForm"] [data-testid="stHorizontalBlock"] {
+        display: flex !important;
+
+        flex-direction: row !important;
+
+        flex-wrap: nowrap !important;
+
+        align-items: center !important;
+
+        gap: 8px !important;
+
+        width: 100% !important;
+    }
+
+    div[data-testid="stForm"] [data-testid="column"] {
+        min-width: 0 !important;
+    }
+
+    div[data-testid="stForm"] [data-testid="column"]:first-child {
+        flex: 1 1 auto !important;
+
+        width: auto !important;
+
+        min-width: 0 !important;
+    }
+
+    div[data-testid="stForm"] [data-testid="column"]:last-child {
+        flex: 0 0 52px !important;
+
+        width: 52px !important;
+
+        min-width: 52px !important;
+    }
+
+
+    /* =====================================================
        TEXT INPUT
     ===================================================== */
 
     div[data-testid="stTextInput"] {
         margin-bottom: 0 !important;
+
+        width: 100% !important;
     }
 
     div[data-testid="stTextInput"] label {
@@ -506,6 +516,8 @@ st.html(
         border: none !important;
 
         box-shadow: none !important;
+
+        width: 100% !important;
     }
 
     div[data-testid="stTextInput"] input {
@@ -532,6 +544,8 @@ st.html(
         min-height:
             44px !important;
 
+        width: 100% !important;
+
         box-shadow:
             none !important;
     }
@@ -556,18 +570,27 @@ st.html(
 
 
     /* =====================================================
-       SEND BUTTON
+       SMALL SEND BUTTON
     ===================================================== */
 
+    div[data-testid="stFormSubmitButton"] {
+        width: 52px !important;
+
+        min-width: 52px !important;
+
+        margin: 0 !important;
+    }
+
     div[data-testid="stFormSubmitButton"] button {
-        height:
-            44px !important;
+        width: 52px !important;
 
-        min-width:
-            48px !important;
+        min-width: 52px !important;
 
-        border:
-            none !important;
+        height: 44px !important;
+
+        padding: 0 !important;
+
+        border: none !important;
 
         border-radius:
             13px !important;
@@ -638,10 +661,7 @@ st.html(
 
         .chat-scroll {
             height:
-                calc(100vh - 145px);
-
-            min-height:
-                0;
+                430px;
 
             flex-direction:
                 column-reverse;
@@ -668,6 +688,29 @@ st.html(
         .custom-disclaimer {
             font-size:
                 9px;
+        }
+
+        /*
+           Keep input and send button together
+           even on mobile.
+        */
+
+        div[data-testid="stForm"] [data-testid="stHorizontalBlock"] {
+            flex-wrap: nowrap !important;
+        }
+
+        div[data-testid="stForm"] [data-testid="column"]:last-child {
+            flex: 0 0 52px !important;
+
+            width: 52px !important;
+
+            min-width: 52px !important;
+        }
+
+        div[data-testid="stFormSubmitButton"] button {
+            width: 52px !important;
+
+            min-width: 52px !important;
         }
     }
 
@@ -742,6 +785,7 @@ if "widget_notes_indexed" not in st.session_state:
 # =========================================================
 
 if "messages" not in st.session_state:
+
     st.session_state.messages = []
 
 
@@ -1164,8 +1208,10 @@ User question:
                     .strip()
                 )
 
-                answer = answer.replace("**", "")
-
+                answer = answer.replace(
+                    "**",
+                    ""
+                )
 
             except Exception:
 
@@ -1206,9 +1252,6 @@ User question:
         )
 
 
-        # Newest assistant response is placed first
-        # in the DOM by build_chat_html(), so it stays
-        # at the bottom of the visual chat.
         chat_placeholder.html(
             f"""
             <div class="chat-scroll">
@@ -1223,7 +1266,6 @@ User question:
         )
 
 
-        # FAST WORD-BY-WORD SPEED
         time.sleep(0.03)
 
 
