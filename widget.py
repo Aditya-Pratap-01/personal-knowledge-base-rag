@@ -3,10 +3,9 @@ import html
 import time
 
 import streamlit as st
-import streamlit.components.v1 as components
 from dotenv import load_dotenv
 from groq import Groq
-from pathlib import Path
+
 from rag import (
     ingest_local_notes,
     search_documents,
@@ -96,43 +95,19 @@ st.html(
 
     /* =====================================================
        STREAMLIT BOTTOM AREA
-       Keep the chat input visible above the bottom edge.
     ===================================================== */
 
     [data-testid="stBottom"] {
         background: #f4f6fb !important;
-
         border: none !important;
-
         box-shadow: none !important;
-
-        position: fixed !important;
-
-        bottom: 0 !important;
-
-        left: 0 !important;
-
-        right: 0 !important;
-
-        z-index: 99999 !important;
-
-        padding-bottom: 8px !important;
     }
 
     [data-testid="stBottomBlockContainer"] {
         background: #f4f6fb !important;
-
         border: none !important;
-
         box-shadow: none !important;
-
-        padding:
-            0
-            4px
-            0
-            4px !important;
-
-        max-width: 100% !important;
+        padding: 0 !important;
     }
 
 
@@ -142,9 +117,7 @@ st.html(
     ===================================================== */
 
     .chat-scroll {
-        height: calc(100vh - 145px);
-
-        min-height: 0;
+        height: 455px;
 
         overflow-y: auto;
         overflow-x: hidden;
@@ -476,10 +449,6 @@ st.html(
         box-shadow:
             0 4px 15px
             rgba(20, 35, 60, 0.06) !important;
-
-        position: relative !important;
-
-        z-index: 100000 !important;
     }
 
     div[data-testid="stForm"] > div {
@@ -639,10 +608,7 @@ st.html(
 
         .chat-scroll {
             height:
-                calc(100vh - 145px);
-
-            min-height:
-                0;
+                430px;
 
             flex-direction:
                 column-reverse;
@@ -960,17 +926,6 @@ chat_placeholder.html(
     """
 )
 
-# =========================================================
-# VOICE INPUT
-# =========================================================
-
-voice_text = components.declare_component(
-    "speech_to_text",
-    path=str(
-        Path(__file__).parent / "speech_component"
-    ),
-)
-
 
 # =========================================================
 # INPUT FORM
@@ -981,8 +936,8 @@ with st.form(
     clear_on_submit=True,
 ):
 
-    col1, col2, col3 = st.columns(
-        [0.76, 0.12, 0.12],
+    col1, col2 = st.columns(
+        [0.88, 0.12],
         vertical_alignment="center",
     )
 
@@ -993,41 +948,15 @@ with st.form(
             "Question",
             placeholder="Ask something...",
             label_visibility="collapsed",
-            key="question_input",
         )
 
 
     with col2:
 
-        spoken_text = voice_text(
-            key="speech_to_text_component",
-        )
-
-        if spoken_text:
-
-            if (
-                spoken_text
-                != st.session_state.get(
-                    "last_spoken_text"
-                )
-            ):
-
-                st.session_state.last_spoken_text = (
-                    spoken_text
-                )
-
-                st.session_state.question_input = (
-                    spoken_text
-                )
-
-
-    with col3:
-
         submitted = st.form_submit_button(
             "➤",
             use_container_width=True,
         )
-
 
 
 # =========================================================
@@ -1201,9 +1130,7 @@ User question:
                     .content
                     .strip()
                 )
-
                 answer = answer.replace("**", "")
-
 
             except Exception:
 
