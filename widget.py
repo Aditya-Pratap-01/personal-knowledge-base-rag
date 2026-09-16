@@ -3,9 +3,10 @@ import html
 import time
 
 import streamlit as st
+import streamlit.components.v1 as components
 from dotenv import load_dotenv
 from groq import Groq
-
+from pathlib import Path
 from rag import (
     ingest_local_notes,
     search_documents,
@@ -959,6 +960,17 @@ chat_placeholder.html(
     """
 )
 
+# =========================================================
+# VOICE INPUT
+# =========================================================
+
+voice_text = components.declare_component(
+    "speech_to_text",
+    path=str(
+        Path(__file__).parent / "speech_component"
+    ),
+)
+
 
 # =========================================================
 # INPUT FORM
@@ -969,8 +981,8 @@ with st.form(
     clear_on_submit=True,
 ):
 
-    col1, col2 = st.columns(
-        [0.88, 0.12],
+    col1, col2, col3 = st.columns(
+        [0.76, 0.12, 0.12],
         vertical_alignment="center",
     )
 
@@ -981,15 +993,41 @@ with st.form(
             "Question",
             placeholder="Ask something...",
             label_visibility="collapsed",
+            key="question_input",
         )
 
 
     with col2:
 
+        spoken_text = voice_text(
+            key="speech_to_text_component",
+        )
+
+        if spoken_text:
+
+            if (
+                spoken_text
+                != st.session_state.get(
+                    "last_spoken_text"
+                )
+            ):
+
+                st.session_state.last_spoken_text = (
+                    spoken_text
+                )
+
+                st.session_state.question_input = (
+                    spoken_text
+                )
+
+
+    with col3:
+
         submitted = st.form_submit_button(
             "➤",
             use_container_width=True,
         )
+
 
 
 # =========================================================
